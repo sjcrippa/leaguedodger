@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { MainLayout } from '@components/ui/layout/MainLayout'
+import { GameLayout } from '@components/ui/layout/GameLayout'
 import { HomePage } from '@components/pages/HomePage'
 import { GamePage } from '@components/pages/GamePage'
-import '@styles/globals.css'
+import './index.css'
 
 const NotFound = () => (
   <div className="flex flex-col items-center justify-center min-h-screen">
@@ -18,12 +19,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Rutas principales con MainLayout */}
         <Route element={<MainLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="game" element={<GamePage />} />
           <Route path="404" element={<NotFound />} />
-          <Route path="*" element={<Navigate to="/404" replace />} />
         </Route>
+
+        {/* Ruta del juego con GameLayout */}
+        <Route element={<GameLayout />}>
+          <Route path="game" element={<GamePage />} />
+        </Route>
+
+        {/* Redirección para rutas no encontradas */}
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
     </BrowserRouter>
   )
