@@ -1,17 +1,81 @@
 # League Dodger - Todo List
 
 ## Fase 1: Configuración y Prototipo Básico
-- [ ] Configurar proyecto base
-  - [ ] Inicializar proyecto con Vite + React
-  - [ ] Configurar TypeScript
-  - [ ] Instalar dependencias principales (Three.js, React Three Fiber, Cannon.js)
-  - [ ] Configurar ESLint y Prettier
-  - [ ] Configurar estructura de carpetas
-  - [ ] Configurar Tailwind CSS
-  - [ ] Configurar CSS Modules
+- [x] Configurar proyecto base
+  - [x] Inicializar proyecto con Vite + React
+  - [x] Configurar TypeScript
+  - [x] Instalar dependencias principales (Three.js, React Three Fiber, Cannon.js)
+  - [x] Configurar ESLint y Prettier
+  - [x] Configurar estructura de carpetas
+  - [x] Configurar Tailwind CSS
+  - [x] Configurar CSS Modules
   - [ ] Establecer estructura de estilos (UI vs Game)
 
-- [ ] Implementar escena básica
+- [x] Configuración de Herramientas
+  - [x] Configurar ESLint
+  - [x] Configurar Prettier
+  - [x] Configurar Tailwind
+  - [x] Configurar PostCSS
+  - [x] Configurar alias de importación
+  - [x] Configurar rutas absolutas
+
+- [x] Estructura de Carpetas
+  - [x] Crear estructura base
+  ```
+  src/
+  ├── assets/           # Recursos estáticos
+  │   ├── models/       # Modelos 3D
+  │   ├── textures/     # Texturas
+  │   └── sounds/       # Sonidos
+  ├── components/       # Componentes React
+  │   ├── game/        # Componentes del juego
+  │   └── ui/          # Componentes de UI
+  ├── game/            # Lógica del juego
+  │   ├── core/        # Sistema central
+  │   ├── physics/     # Sistema de física
+  │   ├── entities/    # Entidades del juego
+  │   └── systems/     # Sistemas del juego
+  ├── scenes/          # Escenas del juego
+  ├── shaders/         # Shaders personalizados
+  ├── styles/          # Estilos
+  │   ├── game/        # Estilos del juego
+  │   └── ui/          # Estilos de UI
+  └── utils/           # Utilidades
+  ```
+
+- [x] Configuración de Rutas y Vistas
+  - [x] Configurar React Router
+  - [x] Implementar rutas base
+    - [x] "/" -> Home/Menú Principal
+      - [x] Diseñar layout principal
+      - [x] Implementar menú de navegación
+      - [x] Crear botón de inicio
+      - [ ] Añadir sección de configuración
+      - [ ] Implementar sección "About"
+      - [ ] Añadir sección de tutorial
+    - [x] "/game" -> Juego
+      - [x] Implementar layout del juego
+      - [ ] Configurar transición de carga
+      - [ ] Añadir sistema de pausa
+      - [ ] Implementar overlay de UI
+  - [ ] Rutas adicionales
+    - [ ] "/settings" -> Configuración avanzada
+    - [ ] "/leaderboard" -> Tabla de puntuaciones
+    - [ ] "/tutorial" -> Tutorial detallado
+  - [ ] Sistema de navegación
+    - [ ] Implementar transiciones entre rutas
+    - [ ] Añadir animaciones de transición
+    - [ ] Configurar manejo de rutas protegidas
+    - [ ] Implementar sistema de redirección
+
+- [ ] UI Básica
+  - [ ] Diseñar y implementar HUD básico con Tailwind
+  - [ ] Crear menú principal con Tailwind
+  - [ ] Implementar sistema de puntuación visual
+  - [ ] Diseñar indicadores de vida/energía
+  - [ ] Crear sistema de notificaciones
+
+- [ ] Escena básica
   - [ ] Crear escena Three.js
   - [ ] Configurar cámara aérea (perspectiva elevada)
   - [ ] Crear cuadrilátero 3D (arena de juego)
@@ -24,13 +88,6 @@
   - [ ] Configurar límites de movimiento
   - [ ] Implementar sistema de cámara que siga al jugador
   - [ ] Configurar cuerpo físico del jugador
-
-- [ ] UI Básica
-  - [ ] Diseñar y implementar HUD básico con Tailwind
-  - [ ] Crear menú principal con Tailwind
-  - [ ] Implementar sistema de puntuación visual
-  - [ ] Diseñar indicadores de vida/energía
-  - [ ] Crear sistema de notificaciones
 
 ## Fase 2: Mecánicas Core
 - [ ] Sistema de física avanzado
@@ -152,4 +209,4 @@
   - [ ] Optimizar assets para producción
   - [ ] Implementar sistema de actualizaciones
   - [ ] Configurar analytics y monitoreo
-  - [ ] Optimizar carga inicial de UI 
+  - [ ] Optimizar carga inicial de UI
