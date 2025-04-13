@@ -1,4 +1,11 @@
 import { create } from 'zustand'
+import { Vector3 } from 'three'
+
+interface Projectile {
+  id: number
+  position: Vector3
+  direction: Vector3
+}
 
 interface Ability {
   key: string
@@ -11,13 +18,17 @@ interface Ability {
 
 interface AbilitiesState {
   abilities: Record<string, Ability>
+  projectiles: Projectile[]
   setAbility: (key: string, ability: Ability) => void
   useAbility: (key: string) => void
   updateCooldowns: (delta: number) => void
+  addProjectile: (projectile: Projectile) => void
+  removeProjectile: (id: number) => void
 }
 
 export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   abilities: {},
+  projectiles: [],
   
   setAbility: (key: string, ability: Ability) => 
     set((state) => ({
@@ -65,5 +76,15 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
       })
       
       return { abilities: updatedAbilities }
-    })
+    }),
+
+  addProjectile: (projectile: Projectile) =>
+    set((state) => ({
+      projectiles: [...state.projectiles, projectile]
+    })),
+
+  removeProjectile: (id: number) =>
+    set((state) => ({
+      projectiles: state.projectiles.filter(p => p.id !== id)
+    }))
 })) 

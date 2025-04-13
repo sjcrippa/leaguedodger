@@ -2,8 +2,13 @@ import { PerspectiveCamera } from '@react-three/drei'
 import { Player } from '../entities/Player'
 import { DEFAULT_GAME_CONFIG } from '../constants/gameConfig'
 import { AbilitiesManager } from './AbilitiesManager'
+import { Projectile } from '../entities/Projectile'
+import { useAbilitiesStore } from '../stores/abilitiesStore'
 
 export const GameScene = () => {
+  const projectiles = useAbilitiesStore((state) => state.projectiles)
+  const removeProjectile = useAbilitiesStore((state) => state.removeProjectile)
+
   return (
     <>
       {/* Camera setup */}
@@ -39,6 +44,16 @@ export const GameScene = () => {
 
       {/* Player */}
       <Player />
+
+      {/* Projectiles */}
+      {projectiles.map((projectile) => (
+        <Projectile
+          key={projectile.id}
+          position={projectile.position}
+          direction={projectile.direction}
+          onDestroy={() => removeProjectile(projectile.id)}
+        />
+      ))}
 
       {/* Abilities Manager */}
       <AbilitiesManager />

@@ -1,40 +1,60 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAbilitiesStore } from '../stores/abilitiesStore'
+import { Vector3 } from 'three'
+import { useThree } from '@react-three/fiber'
+import { ABILITY_KEYS, AbilityKey } from '../types/abilities'
+import { ABILITIES_CONFIG } from '../constants/abilities'
 
 export const useAbilities = () => {
-  const { useAbility, setAbility } = useAbilitiesStore()
+  const { useAbility, setAbility, addProjectile } = useAbilitiesStore()
+  const { scene } = useThree()
+  const projectileId = useRef(0)
 
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      const key = event.key.toLowerCase()
-      
-      // Check if the key is a valid ability key
-      if (['q', 'w', 'e', 'r', 'd', 'f'].includes(key)) {
-        useAbility(key)
-      }
+  const handleKeyPress = (event: KeyboardEvent) => {
+    const key = event.key.toLowerCase()
+    if (ABILITY_KEYS.includes(key as AbilityKey)) {
+      useAbility(key as AbilityKey)
+    }
+  }
+
+  const shootProjectile = () => {
+    const player = scene.getObjectByName('player')
+    if (!player) return
+
+    // Get player's forward direction based on rotation
+    const direction = new Vector3(0, 0, 1)
+      .applyQuaternion(player.quaternion)
+      .normalize()
+
+    // Create projectile slightly in front of the player
+    const startPosition = player.position.clone().add(direction.clone().multiplyScalar(1))
+
+    // Create projectile
+    const projectile = {
+      id: projectileId.current++,
+      position: startPosition,
+      direction
     }
 
+    addProjectile(projectile)
+  }
+
+  // Initialize keyboard event listener
+  useEffect(() => {
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [useAbility])
 
   // Initialize abilities
   useEffect(() => {
-    // Basic ability template
-    const createAbility = (key: string, name: string, cooldown: number) => ({
-      key,
-      name,
-      cooldown,
-      currentCooldown: 0,
-      isReady: true,
-      execute: () => console.log(`Executing ${name} ability`)
-    })
-
     // Set up all abilities
-    setAbility('q', createAbility('q', 'Q Ability', 5))
-    setAbility('w', createAbility('w', 'W Ability', 8))
-    setAbility('e', createAbility('e', 'E Ability', 10))
-    setAbility('r', createAbility('r', 'R Ability', 30))
-    setAbility('d', createAbility('d', 'D/F Ability', 15))
-  }, [setAbility])
+    Object.entries(ABILITIES_CONFIG).forEach(([key, config]) => {
+      setAbility(key as AbilityKey, {
+        ...config,
+        currentCooldown: 0,
+        isReady: true,
+        execute: key === 'q' ? shootProjectile : () => console.log(`${config.name} executed`)
+      })
+    })
+  }, [setAbility, scene, addProjectile])
 } 

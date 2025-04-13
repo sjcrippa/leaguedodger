@@ -41,6 +41,7 @@ export const Player = () => {
       ref={meshRef}
       position={[0, 2.5, 0]}
       castShadow
+      name="player"
     >
       {/* Main body */}
       <boxGeometry args={[1, 4, 1]} />
