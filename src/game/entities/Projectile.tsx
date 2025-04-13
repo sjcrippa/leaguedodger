@@ -32,8 +32,8 @@ export const Projectile = ({ position, direction, speed = 0.5, onDestroy }: Proj
     <mesh ref={meshRef} position={position}>
       <boxGeometry args={[0.5, 0.5, 0.5]} />
       <meshStandardMaterial 
-        color="blue" 
-        emissive="blue"
+        color="red" 
+        emissive="red"
         emissiveIntensity={0.5}
       />
     </mesh>
