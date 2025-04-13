@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { Vector3 } from "three";
-import { Projectile, AbilityKey } from "../types/abilities";
+import { Ability, Projectile, AbilityKey } from "../types/abilities";
 import { ABILITIES_CONFIG } from "../constants/abilities";
 
 interface AbilitiesState {
   projectiles: Projectile[];
   cooldowns: { [key: string]: number };
-  addProjectile: (position: Vector3, direction: Vector3) => void;
+  addProjectile: (position: Vector3, direction: Vector3, source: 'player' | 'enemy', speed?: number) => void;
   removeProjectile: (id: string) => void;
   useAbility: (abilityKey: string, position: Vector3, direction: Vector3) => boolean;
   castAbility: (abilityKey: AbilityKey, player: THREE.Object3D) => void;
@@ -17,13 +17,15 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   projectiles: [],
   cooldowns: {},
 
-  addProjectile: (position, direction) => {
+  addProjectile: (position, direction, source, speed = 0.8) => {
     const id = Math.random().toString(36).substring(7);
     const projectile: Projectile = {
       id,
       position: position.clone(),
       direction: direction.normalize(),
       createdAt: Date.now(),
+      source,
+      speed
     };
     set(state => ({ projectiles: [...state.projectiles, projectile] }));
   },
@@ -61,7 +63,7 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
 
     // Create projectile for Q ability
     if (abilityKey === "q") {
-      get().addProjectile(position, direction);
+      get().addProjectile(position, direction, 'player');
     }
 
     return true;
@@ -95,11 +97,11 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
         return acc;
       }, {} as { [key: string]: number }),
       
-      // Update projectile positions based on delta time
+      // Update projectile positions based on their individual speeds
       projectiles: state.projectiles.map(projectile => ({
         ...projectile,
         position: projectile.position.clone().add(
-          projectile.direction.clone().multiplyScalar(delta * 30) // 30 units per second
+          projectile.direction.clone().multiplyScalar(delta * projectile.speed * 30)
         )
       }))
     }));

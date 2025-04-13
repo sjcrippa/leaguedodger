@@ -9,6 +9,8 @@ export interface Projectile {
   position: Vector3;
   direction: Vector3;
   createdAt: number;
+  source: 'player' | 'enemy';
+  speed: number;
 }
 
 export interface Ability {
@@ -17,6 +19,7 @@ export interface Ability {
   cooldown: number;
   range?: number;
   duration?: number;
+  damage: number;
 }
 
 export type AbilityEffect = {

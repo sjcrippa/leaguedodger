@@ -1,13 +1,38 @@
-import { PerspectiveCamera } from "@react-three/drei";
-import { Player } from "../entities/Player";
-import { DEFAULT_GAME_CONFIG } from "../constants/gameConfig";
-import { AbilitiesManager } from "./AbilitiesManager";
-import { Projectile } from "../entities/Projectile";
-import { useAbilitiesStore } from "../stores/abilitiesStore";
+import { useEffect } from 'react'
+import { PerspectiveCamera } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber'
+import { Player } from '../entities/Player'
+import { Enemy } from '../entities/Enemy'
+import { DEFAULT_GAME_CONFIG } from '../constants/gameConfig'
+import { AbilitiesManager } from './AbilitiesManager'
+import { Projectile } from '../entities/Projectile'
+import { useAbilitiesStore } from '../stores/abilitiesStore'
+import { useEnemyStore } from '../stores/enemyStore'
+import { usePlayerStore } from '../stores/playerStore'
+import { Vector3 } from 'three'
 
 export const GameScene = () => {
-  const projectiles = useAbilitiesStore(state => state.projectiles);
-  const removeProjectile = useAbilitiesStore(state => state.removeProjectile);
+  const projectiles = useAbilitiesStore((state) => state.projectiles)
+  const removeProjectile = useAbilitiesStore((state) => state.removeProjectile)
+  const playerPosition = usePlayerStore((state) => state.state.position)
+  
+  const enemies = useEnemyStore((state) => state.enemies)
+  const addEnemy = useEnemyStore((state) => state.addEnemy)
+  const updateEnemies = useEnemyStore((state) => state.updateEnemies)
+
+  // Inicializar enemigos
+  useEffect(() => {
+    // Agregar dos enemigos en posiciones dentro del mapa
+    // El mapa es 60x40, considerando el tamaño de los enemigos (2 unidades de ancho)
+    // dejamos un margen de 5 unidades del borde
+    addEnemy(new Vector3(-20, 3, -15))  // Enemigo a la izquierda
+    addEnemy(new Vector3(20, 3, -15))   // Enemigo a la derecha
+  }, [addEnemy])
+
+  // Actualizar enemigos en cada frame
+  useFrame(() => {
+    updateEnemies(playerPosition)
+  })
 
   return (
     <>
@@ -32,18 +57,26 @@ export const GameScene = () => {
       />
 
       {/* Game floor */}
-      <mesh name="game-floor" rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, 0, 0]}>
-        <planeGeometry
-          args={[DEFAULT_GAME_CONFIG.mapSize.width, DEFAULT_GAME_CONFIG.mapSize.height]}
-        />
+      <mesh 
+        name="game-floor"
+        rotation={[-Math.PI / 2, 0, 0]} 
+        receiveShadow
+        position={[0, 0, 0]}
+      >
+        <planeGeometry args={[DEFAULT_GAME_CONFIG.mapSize.width, DEFAULT_GAME_CONFIG.mapSize.height]} />
         <meshStandardMaterial color="#1F2937" />
       </mesh>
 
       {/* Player */}
       <Player />
 
+      {/* Enemies */}
+      {enemies.map((enemy) => (
+        <Enemy key={enemy.id} enemy={enemy} />
+      ))}
+
       {/* Projectiles */}
-      {projectiles.map(projectile => (
+      {projectiles.map((projectile) => (
         <Projectile
           key={projectile.id}
           position={projectile.position}
@@ -55,5 +88,5 @@ export const GameScene = () => {
       {/* Managers */}
       <AbilitiesManager />
     </>
-  );
-};
+  )
+}
