@@ -20,19 +20,14 @@ export const GameScene = () => {
   const isGameOver = useGameStore(state => state.isGameOver)
   
   const enemies = useEnemyStore((state) => state.enemies)
-  const addEnemy = useEnemyStore((state) => state.addEnemy)
+  const reset = useEnemyStore((state) => state.reset)
   const updateEnemies = useEnemyStore((state) => state.updateEnemies)
 
   // Inicializar enemigos
   useEffect(() => {
     if (isGameOver) return;
-    
-    // Agregar dos enemigos en posiciones dentro del mapa
-    // El mapa es 60x40, considerando el tamaño de los enemigos (2 unidades de ancho)
-    // dejamos un margen de 5 unidades del borde
-    addEnemy(new Vector3(-20, 3, -15))  // Enemigo a la izquierda
-    addEnemy(new Vector3(20, 3, -15))   // Enemigo a la derecha
-  }, [addEnemy, isGameOver])
+    reset() // Esto spawneará los enemigos iniciales en posiciones aleatorias
+  }, [reset, isGameOver])
 
   // Actualizar enemigos en cada frame
   useFrame(() => {
