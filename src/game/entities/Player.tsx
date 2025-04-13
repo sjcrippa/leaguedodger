@@ -48,7 +48,7 @@ export const Player = () => {
     >
       {/* Main body */}
       <boxGeometry args={[1.5, 4, 1.5]} />
-      <meshStandardMaterial color="red" />
+      <meshStandardMaterial color="blue" />
       
       {/* Eyes (optional decorative elements) */}
       <group position={[0, 1.5, 0.9]}>

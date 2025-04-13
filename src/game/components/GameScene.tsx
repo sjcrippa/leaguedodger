@@ -5,6 +5,7 @@ import { Player } from '../entities/Player'
 import { Enemy } from '../entities/Enemy'
 import { DEFAULT_GAME_CONFIG } from '../constants/gameConfig'
 import { AbilitiesManager } from './AbilitiesManager'
+import { CollisionManager } from './CollisionManager'
 import { Projectile } from '../entities/Projectile'
 import { useAbilitiesStore } from '../stores/abilitiesStore'
 import { useEnemyStore } from '../stores/enemyStore'
@@ -81,12 +82,15 @@ export const GameScene = () => {
           key={projectile.id}
           position={projectile.position}
           direction={projectile.direction}
+          source={projectile.source}
+          speed={projectile.speed}
           onDestroy={() => removeProjectile(projectile.id)}
         />
       ))}
 
       {/* Managers */}
       <AbilitiesManager />
+      <CollisionManager />
     </>
   )
 }

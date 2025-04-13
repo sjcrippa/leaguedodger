@@ -16,6 +16,6 @@ export interface EnemyConfig {
 
 export const DEFAULT_ENEMY_CONFIG: EnemyConfig = {
   attackCooldown: 2,     // Dispara cada 2 segundos
-  attackRange: 40,       // Rango de detección y ataque
+  attackRange: 70,       // Rango de detección y ataque
   projectileSpeed: 0.8   // Aumentamos la velocidad de los proyectiles enemigos
 } 

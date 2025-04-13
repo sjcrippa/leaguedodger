@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { Vector3 } from 'three'
 import { EnemyState, EnemyConfig, DEFAULT_ENEMY_CONFIG } from '../types/enemy'
 import { useAbilitiesStore } from './abilitiesStore'
+import { useGameStore } from './gameStore'
 
 interface EnemyStore {
   enemies: EnemyState[]
@@ -37,6 +38,7 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
     const now = Date.now()
     const { enemies, config } = get()
     const addProjectile = useAbilitiesStore.getState().addProjectile
+    const enemyProjectilesEnabled = useGameStore.getState().enemyProjectilesEnabled
 
     enemies.forEach(enemy => {
       if (!enemy.isAlive) return
@@ -54,7 +56,9 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
       const distanceToPlayer = enemy.position.distanceTo(playerPosition)
       const timeSinceLastAttack = (now - enemy.lastAttackTime) / 1000 // convertir a segundos
 
-      if (distanceToPlayer <= config.attackRange && timeSinceLastAttack >= config.attackCooldown) {
+      if (enemyProjectilesEnabled && 
+          distanceToPlayer <= config.attackRange && 
+          timeSinceLastAttack >= config.attackCooldown) {
         // Disparar al jugador
         enemy.lastAttackTime = now
         

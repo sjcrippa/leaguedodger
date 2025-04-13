@@ -1,3 +1,5 @@
+import { useGameStore } from '../stores/gameStore'
+
 interface GameHUDProps {
   score: number;
   health: number;
@@ -5,6 +7,9 @@ interface GameHUDProps {
 }
 
 export const GameHUD = ({ score, health, energy }: GameHUDProps) => {
+  const enemyProjectilesEnabled = useGameStore((state) => state.enemyProjectilesEnabled)
+  const toggleEnemyProjectiles = useGameStore((state) => state.toggleEnemyProjectiles)
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="flex justify-between items-start">
@@ -34,6 +39,18 @@ export const GameHUD = ({ score, health, energy }: GameHUDProps) => {
             </div>
           </div>
         </div> */}
+
+        {/* Debug Controls */}
+        <div className="mt-4">
+          <button
+            onClick={toggleEnemyProjectiles}
+            className={`px-4 py-2 rounded ${
+              enemyProjectilesEnabled ? 'bg-red-500' : 'bg-green-500'
+            }`}
+          >
+            {enemyProjectilesEnabled ? 'Pausar Proyectiles' : 'Activar Proyectiles'}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
   flashCooldown: 5,
   shieldDuration: 2,
   shieldCooldown: 8,
+  invulnerabilityDuration: 1 // 1 segundo de invulnerabilidad después de recibir daño
 };
 
 interface PlayerStore {
@@ -25,98 +26,102 @@ interface PlayerStore {
   reset: () => void;
 }
 
-export const usePlayerStore = create<PlayerStore>(set => ({
+export const usePlayerStore = create<PlayerStore>((set) => ({
   state: {
     isAlive: true,
     isInvulnerable: false,
     isDashing: false,
     isFlashing: false,
     position: new Vector3(0, 2.5, 0),
-    velocity: new Vector3(),
+    velocity: new Vector3()
   },
   status: {
     isMoving: false,
     isUsingAbility: false,
-    currentAbility: null,
+    currentAbility: null
   },
   config: DEFAULT_PLAYER_CONFIG,
 
-  takeDamage: () =>
-    set(state => {
-      if (state.state.isInvulnerable) return state;
-
-      return {
+  takeDamage: () => set((state) => {
+    if (state.state.isInvulnerable) return state
+    
+    // Hacer al jugador invulnerable temporalmente
+    state.state.isInvulnerable = true
+    setTimeout(() => {
+      set(state => ({
         state: {
           ...state.state,
-          isAlive: false,
-        },
-      };
-    }),
+          isInvulnerable: false
+        }
+      }))
+    }, DEFAULT_PLAYER_CONFIG.invulnerabilityDuration * 1000)
 
-  setInvulnerable: isInvulnerable =>
-    set(state => ({
+    return {
       state: {
         ...state.state,
-        isInvulnerable,
-      },
-    })),
+        isInvulnerable: true
+      }
+    }
+  }),
 
-  setDashing: isDashing =>
-    set(state => ({
-      state: {
-        ...state.state,
-        isDashing,
-      },
-      status: {
-        ...state.status,
-        isUsingAbility: isDashing,
-        currentAbility: isDashing ? "e" : null,
-      },
-    })),
+  setInvulnerable: (isInvulnerable) => set((state) => ({
+    state: {
+      ...state.state,
+      isInvulnerable
+    }
+  })),
 
-  setFlashing: isFlashing =>
-    set(state => ({
-      state: {
-        ...state.state,
-        isFlashing,
-      },
-      status: {
-        ...state.status,
-        isUsingAbility: isFlashing,
-        currentAbility: isFlashing ? "r" : null,
-      },
-    })),
+  setDashing: (isDashing) => set((state) => ({
+    state: {
+      ...state.state,
+      isDashing
+    },
+    status: {
+      ...state.status,
+      isUsingAbility: isDashing,
+      currentAbility: isDashing ? 'e' : null
+    }
+  })),
 
-  updatePosition: position =>
-    set(state => ({
-      state: {
-        ...state.state,
-        position,
-      },
-    })),
+  setFlashing: (isFlashing) => set((state) => ({
+    state: {
+      ...state.state,
+      isFlashing
+    },
+    status: {
+      ...state.status,
+      isUsingAbility: isFlashing,
+      currentAbility: isFlashing ? 'r' : null
+    }
+  })),
 
-  updateVelocity: velocity =>
-    set(state => ({
-      state: {
-        ...state.state,
-        velocity,
-      },
-    })),
+  updatePosition: (position) => set((state) => ({
+    state: {
+      ...state.state,
+      position
+    }
+  })),
 
-  reset: () =>
-    set({
-      state: {
-        isAlive: true,
-        isInvulnerable: false,
-        isDashing: false,
-        isFlashing: false,
-        position: new Vector3(0, 2.5, 0),
-        velocity: new Vector3(),
-      },
-      status: {
-        isMoving: false,
-        isUsingAbility: false,
-        currentAbility: null,
-      },
-    }),
+  updateVelocity: (velocity) => set((state) => ({
+    state: {
+      ...state.state,
+      velocity
+    }
+  })),
+
+  reset: () => set({
+    state: {
+      isAlive: true,
+      isInvulnerable: false,
+      isDashing: false,
+      isFlashing: false,
+      position: new Vector3(0, 2.5, 0),
+      velocity: new Vector3()
+    },
+    status: {
+      isMoving: false,
+      isUsingAbility: false,
+      currentAbility: null
+    }
+  })
 }));

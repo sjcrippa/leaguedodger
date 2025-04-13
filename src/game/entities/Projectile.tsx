@@ -6,10 +6,11 @@ interface ProjectileProps {
   position: Vector3;
   direction: Vector3;
   speed?: number;
+  source?: 'player' | 'enemy';
   onDestroy?: () => void;
 }
 
-export const Projectile = ({ position, direction, speed = 0.5, onDestroy }: ProjectileProps) => {
+export const Projectile = ({ position, direction, speed = 0.5, source = 'player', onDestroy }: ProjectileProps) => {
   const meshRef = useRef<Mesh>(null);
   const lifetime = useRef(0);
 
@@ -23,6 +24,7 @@ export const Projectile = ({ position, direction, speed = 0.5, onDestroy }: Proj
     // Log movement for debugging
     if (lifetime.current === 0) {
       console.log("Projectile initial state:", {
+        source,
         position: meshRef.current.position.toArray(),
         movement: movement.toArray(),
         direction: direction.toArray(),
@@ -39,12 +41,15 @@ export const Projectile = ({ position, direction, speed = 0.5, onDestroy }: Proj
     }
   });
 
+  // Color según la fuente del proyectil
+  const projectileColor = source === 'player' ? 'blue' : 'red';
+
   return (
     <mesh ref={meshRef} position={position}>
       <boxGeometry args={[0.5, 0.5, 0.5]} />
       <meshStandardMaterial
-        color="red"
-        emissive="red"
+        color={projectileColor}
+        emissive={projectileColor}
         emissiveIntensity={0.5}
         transparent
         opacity={0.8}

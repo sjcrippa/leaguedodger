@@ -9,9 +9,9 @@ export const DEFAULT_GAME_CONFIG: GameConfig = {
   playerSpeed: 0.2,
   difficulty: "medium",
   collision: {
-    playerRadius: 0.5, // Half of player's width/height
-    projectileRadius: 0.25, // Half of projectile's width/height
-    minCollisionDistance: 0.75, // Sum of both radii
+    playerRadius: 1.0,    // Aumentado para match con el nuevo tamaño del jugador
+    projectileRadius: 0.5, // Aumentado para mejor detección
+    minCollisionDistance: 1.5, // Suma de ambos radios
   },
 };
 
