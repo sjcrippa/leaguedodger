@@ -3,11 +3,16 @@ import { GameConfig } from '../types/game'
 // Default game configuration
 export const DEFAULT_GAME_CONFIG: GameConfig = {
   mapSize: {
-    width: 30,  // Width of the game map
-    height: 20, // Height of the game map
+    width: 60,  // Width of the game map
+    height: 40, // Height of the game map
   },
   playerSpeed: 0.2,
   difficulty: 'medium',
+  collision: {
+    playerRadius: 0.5, // Half of player's width/height
+    projectileRadius: 0.25, // Half of projectile's width/height
+    minCollisionDistance: 0.75 // Sum of both radii
+  },
 }
 
 // Game physics constants

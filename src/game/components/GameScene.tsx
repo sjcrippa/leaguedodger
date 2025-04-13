@@ -14,10 +14,10 @@ export const GameScene = () => {
       {/* Camera setup */}
       <PerspectiveCamera
         makeDefault
-        position={[0, 35, 35]}
+        position={[0, 50, 50]}
         rotation={[-Math.PI / 4, 0, 0]}
         fov={45}
-        zoom={1.5}
+        zoom={1}
         near={0.1}
         far={1000}
       />
@@ -55,7 +55,7 @@ export const GameScene = () => {
         />
       ))}
 
-      {/* Abilities Manager */}
+      {/* Managers */}
       <AbilitiesManager />
     </>
   )

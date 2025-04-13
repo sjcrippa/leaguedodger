@@ -26,7 +26,7 @@ export interface Player extends Entity {
   speed: number
 }
 
-// Game settings and configuration
+// Game configuration type
 export interface GameConfig {
   mapSize: {
     width: number
@@ -34,4 +34,9 @@ export interface GameConfig {
   }
   playerSpeed: number
   difficulty: 'easy' | 'medium' | 'hard'
+  collision: {
+    playerRadius: number
+    projectileRadius: number
+    minCollisionDistance: number
+  }
 } 

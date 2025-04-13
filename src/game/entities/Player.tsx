@@ -1,14 +1,22 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { Mesh, Vector3 } from 'three'
 import { useFrame } from '@react-three/fiber'
 import { useGameStore } from '../stores/gameStore'
 import { usePlayerControls } from '../hooks/usePlayerControls'
+import { usePlayerStore } from '../stores/playerStore'
 
 export const Player = () => {
   const meshRef = useRef<Mesh>(null)
   const isGameOver = useGameStore((state) => state.isGameOver)
   const controls = usePlayerControls(meshRef)
-  const velocity = useRef(new Vector3())
+  const updatePosition = usePlayerStore((state) => state.updatePosition)
+
+  // Update player position in store
+  useEffect(() => {
+    if (meshRef.current) {
+      updatePosition(meshRef.current.position)
+    }
+  }, [])
 
   // Handle movement in animation frame
   useFrame(() => {
@@ -24,14 +32,11 @@ export const Player = () => {
           .subVectors(controls.targetPosition, currentPos)
           .normalize()
 
-        // Actualizar velocidad
-        velocity.current.copy(direction).multiplyScalar(controls.moveSpeed)
-
         // Aplicar movimiento suave
-        currentPos.add(velocity.current)
+        currentPos.add(direction.multiplyScalar(controls.moveSpeed))
+        updatePosition(currentPos)
       } else {
         controls.isMoving = false
-        velocity.current.set(0, 0, 0)
       }
     }
   })

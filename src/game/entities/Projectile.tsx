@@ -17,7 +17,18 @@ export const Projectile = ({ position, direction, speed = 0.5, onDestroy }: Proj
     if (!meshRef.current) return
 
     // Move projectile
-    meshRef.current.position.add(direction.clone().multiplyScalar(speed))
+    const movement = direction.clone().multiplyScalar(speed)
+    meshRef.current.position.add(movement)
+
+    // Log movement for debugging
+    if (lifetime.current === 0) {
+      console.log('Projectile initial state:', {
+        position: meshRef.current.position.toArray(),
+        movement: movement.toArray(),
+        direction: direction.toArray(),
+        speed
+      })
+    }
 
     // Update lifetime
     lifetime.current += delta
@@ -32,9 +43,11 @@ export const Projectile = ({ position, direction, speed = 0.5, onDestroy }: Proj
     <mesh ref={meshRef} position={position}>
       <boxGeometry args={[0.5, 0.5, 0.5]} />
       <meshStandardMaterial 
-        color="red" 
-        emissive="red"
+        color="blue" 
+        emissive="blue"
         emissiveIntensity={0.5}
+        transparent
+        opacity={0.8}
       />
     </mesh>
   )

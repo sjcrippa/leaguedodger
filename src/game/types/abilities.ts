@@ -1,20 +1,27 @@
 import { Vector3 } from 'three'
 
+export type AbilityKey = 'q' | 'w' | 'e' | 'r'
+
+export const ABILITY_KEYS: AbilityKey[] = ['q', 'w', 'e', 'r']
+
 export interface Projectile {
-  id: number
+  id: string
   position: Vector3
   direction: Vector3
+  createdAt: number
 }
 
 export interface Ability {
-  key: string
+  key: AbilityKey
   name: string
   cooldown: number
-  currentCooldown: number
-  isReady: boolean
-  execute: () => void
+  range?: number
+  duration?: number
 }
 
-export type AbilityKey = 'q' | 'w' | 'e' | 'r' | 'd' | 'f'
-
-export const ABILITY_KEYS: AbilityKey[] = ['q', 'w', 'e', 'r', 'd', 'f'] 
+export type AbilityEffect = {
+  type: 'shield' | 'movement'
+  value: number
+  duration?: number
+  target: 'self' | 'area'
+} 

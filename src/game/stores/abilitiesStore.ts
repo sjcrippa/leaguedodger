@@ -1,80 +1,85 @@
 import { create } from "zustand";
-
-import { Ability, Projectile } from "../types/abilities";
+import { Vector3 } from "three";
+import { Projectile } from "../types/abilities";
+import { ABILITIES_CONFIG } from "../constants/abilities";
 
 interface AbilitiesState {
-  abilities: Record<string, Ability>;
   projectiles: Projectile[];
-  setAbility: (key: string, ability: Ability) => void;
-  useAbility: (key: string) => void;
-  updateCooldowns: (delta: number) => void;
-  addProjectile: (projectile: Projectile) => void;
-  removeProjectile: (id: number) => void;
+  cooldowns: { [key: string]: number };
+  addProjectile: (position: Vector3, direction: Vector3) => void;
+  removeProjectile: (id: string) => void;
+  useAbility: (abilityKey: string, position: Vector3, direction: Vector3) => boolean;
+  update: (delta: number) => void;
 }
 
 export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
-  abilities: {},
   projectiles: [],
+  cooldowns: {},
 
-  setAbility: (key: string, ability: Ability) =>
-    set(state => ({
-      abilities: {
-        ...state.abilities,
-        [key]: ability,
-      },
-    })),
-
-  useAbility: (key: string) => {
-    const state = get();
-    const ability = state.abilities[key];
-
-    if (ability && ability.isReady) {
-      console.log(`Using ability: ${ability.name}`);
-      ability.execute();
-
-      set(state => ({
-        abilities: {
-          ...state.abilities,
-          [key]: {
-            ...ability,
-            currentCooldown: ability.cooldown,
-            isReady: false,
-          },
-        },
-      }));
-    } else {
-      console.log(
-        `Ability ${key} is on cooldown: ${ability?.currentCooldown?.toFixed(2)}s remaining`
-      );
-    }
+  addProjectile: (position, direction) => {
+    const id = Math.random().toString(36).substring(7);
+    const projectile: Projectile = {
+      id,
+      position: position.clone(),
+      direction: direction.normalize(),
+      createdAt: Date.now(),
+    };
+    set(state => ({ projectiles: [...state.projectiles, projectile] }));
   },
 
-  updateCooldowns: (delta: number) =>
-    set(state => {
-      const updatedAbilities = { ...state.abilities };
-
-      Object.keys(updatedAbilities).forEach(key => {
-        const ability = updatedAbilities[key];
-        if (!ability.isReady) {
-          const newCooldown = Math.max(0, ability.currentCooldown - delta);
-          updatedAbilities[key] = {
-            ...ability,
-            currentCooldown: newCooldown,
-            isReady: newCooldown === 0,
-          };
-        }
-      });
-
-      return { abilities: updatedAbilities };
-    }),
-
-  addProjectile: (projectile: Projectile) =>
-    set(state => ({
-      projectiles: [...state.projectiles, projectile],
-    })),
-
-  removeProjectile: (id: number) =>
+  removeProjectile: id => {
     set(state => ({
       projectiles: state.projectiles.filter(p => p.id !== id),
-    })),
+    }));
+  },
+
+  useAbility: (abilityKey, position, direction) => {
+    const { cooldowns } = get();
+    const ability = ABILITIES_CONFIG[abilityKey];
+    if (!ability) return false;
+
+    const now = Date.now();
+    const lastUsed = cooldowns[abilityKey] || 0;
+    const cooldownMs = ability.cooldown * 1000; // Convert seconds to milliseconds
+    const cooldownRemaining = lastUsed + cooldownMs - now;
+
+    if (cooldownRemaining > 0) {
+      console.log(
+        `Ability ${ability.name} on cooldown for ${(cooldownRemaining / 1000).toFixed(1)}s`
+      );
+      return false;
+    }
+
+    // Update cooldown
+    set(state => ({
+      cooldowns: {
+        ...state.cooldowns,
+        [abilityKey]: now,
+      },
+    }));
+
+    // Create projectile for Q ability
+    if (abilityKey === "q") {
+      get().addProjectile(position, direction);
+    }
+
+    return true;
+  },
+
+  update: delta => {
+    // Clean up expired cooldowns
+    const now = Date.now();
+    set(state => ({
+      cooldowns: Object.entries(state.cooldowns).reduce((acc, [key, time]) => {
+        const ability = ABILITIES_CONFIG[key];
+        if (!ability) return acc;
+
+        const cooldownMs = ability.cooldown * 1000;
+        if (now - time < cooldownMs) {
+          acc[key] = time;
+        }
+        return acc;
+      }, {} as { [key: string]: number }),
+    }));
+  },
 }));
