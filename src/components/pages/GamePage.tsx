@@ -20,14 +20,7 @@ export const GamePage = () => {
     <div className="relative w-full h-screen">
       {/* Canvas del juego ocupando toda la pantalla */}
       <div className="absolute inset-0" onWheel={handleWheel}>
-        <Canvas 
-          shadows
-          camera={{ 
-            fov: 45,
-            position: [0, 25, 20],
-            zoom: 1.2,
-          }}
-        >
+        <Canvas shadows>
           <Suspense fallback={null}>
             <GameScene />
           </Suspense>

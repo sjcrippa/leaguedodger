@@ -100,10 +100,10 @@ export const GameScene = () => {
       <PerspectiveCamera
         ref={cameraRef}
         makeDefault
-        position={[0, 25, 10]} // Más alto (25) y más cerca (20) para mantener el zoom pero ver más desde arriba
-        rotation={[-Math.PI / 2.5, 0, 0]} // Aproximadamente 72 grados, más inclinado que antes
-        fov={55} // Mantenemos el FOV estrecho
-        zoom={1.2} // Mantenemos el zoom
+        position={[0, 35, 35]}
+        rotation={[-Math.PI / 4, 0, 0]}
+        fov={45}
+        zoom={2}
         near={0.1}
         far={1000}
       />
