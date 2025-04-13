@@ -4,7 +4,7 @@ export const ABILITIES_CONFIG: Record<string, Omit<Ability, 'execute' | 'current
   q: {
     key: 'q',
     name: 'Projectile Shot',
-    cooldown: 1
+    cooldown: 0.2
   },
   w: {
     key: 'w',

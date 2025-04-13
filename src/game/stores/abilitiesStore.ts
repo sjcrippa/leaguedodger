@@ -1,20 +1,6 @@
 import { create } from 'zustand'
 import { Vector3 } from 'three'
-
-interface Projectile {
-  id: number
-  position: Vector3
-  direction: Vector3
-}
-
-interface Ability {
-  key: string
-  name: string
-  cooldown: number
-  currentCooldown: number
-  isReady: boolean
-  execute: () => void
-}
+import { Ability, Projectile } from '../types/abilities'
 
 interface AbilitiesState {
   abilities: Record<string, Ability>
@@ -56,6 +42,8 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
           }
         }
       }))
+    } else {
+      console.log(`Ability ${key} is on cooldown: ${ability?.currentCooldown?.toFixed(2)}s remaining`)
     }
   },
   
