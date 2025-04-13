@@ -9,13 +9,13 @@ importers:
   .:
     dependencies:
       '@react-three/cannon':
-        specifier: ^6.5.2
+        specifier: ^6.6.0
         version: 6.6.0(@react-three/fiber@8.18.0(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.161.0))(react@18.3.1)(three@0.161.0)(typescript@5.8.3)
       '@react-three/drei':
-        specifier: ^9.99.0
+        specifier: ^9.122.0
         version: 9.122.0(@react-three/fiber@8.18.0(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.161.0))(@types/react@18.3.20)(@types/three@0.161.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.161.0)(use-sync-external-store@1.5.0(react@18.3.1))
       '@react-three/fiber':
-        specifier: ^8.15.16
+        specifier: ^8.18.0
         version: 8.18.0(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.161.0)
       cannon-es:
         specifier: ^0.20.0
