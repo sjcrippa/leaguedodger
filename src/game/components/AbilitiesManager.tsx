@@ -16,9 +16,8 @@ export const AbilitiesManager = () => {
     let frameId: number;
 
     const update = () => {
-      if (!isPaused && !isGameOver) {
-        updateCooldowns(1 / 60); // Assuming 60 FPS
-      }
+      if (isPaused || isGameOver) return;
+      updateCooldowns(1 / 60); // Assuming 60 FPS
       frameId = requestAnimationFrame(update);
     };
 

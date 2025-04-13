@@ -10,6 +10,7 @@ interface EnemyStore {
   addEnemy: (position: Vector3) => void
   removeEnemy: (id: string) => void
   updateEnemies: (playerPosition: Vector3) => void
+  reset: () => void
 }
 
 export const useEnemyStore = create<EnemyStore>((set, get) => ({
@@ -32,6 +33,10 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
     set(state => ({
       enemies: state.enemies.filter(enemy => enemy.id !== id)
     }))
+  },
+
+  reset: () => {
+    set({ enemies: [] })
   },
 
   updateEnemies: (playerPosition) => {

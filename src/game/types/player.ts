@@ -15,7 +15,7 @@ export type PlayerStatus = {
   currentAbility: string | null;
 };
 
-export interface PlayerConfig {
+export type PlayerConfig = {
   baseSpeed: number;
   dashSpeed: number;
   dashDuration: number;
@@ -24,4 +24,6 @@ export interface PlayerConfig {
   shieldDuration: number;
   shieldCooldown: number;
   invulnerabilityDuration: number;
-}
+  maxHealth: number;
+  currentHealth: number;
+};

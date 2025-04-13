@@ -11,11 +11,19 @@ interface AbilitiesState {
   useAbility: (abilityKey: string, position: Vector3, direction: Vector3) => boolean;
   castAbility: (abilityKey: AbilityKey, player: THREE.Object3D) => void;
   update: (delta: number) => void;
+  reset: () => void;
 }
 
 export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   projectiles: [],
-  cooldowns: {},
+  cooldowns: {
+    q: 0,
+    w: 0,
+    e: 0,
+    r: 0,
+    d: 0,
+    f: 0
+  },
 
   addProjectile: (position, direction, source, speed = 0.8) => {
     const id = Math.random().toString(36).substring(7);
@@ -34,6 +42,20 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
     set(state => ({
       projectiles: state.projectiles.filter(p => p.id !== id),
     }));
+  },
+
+  reset: () => {
+    set({
+      projectiles: [],
+      cooldowns: {
+        q: 0,
+        w: 0,
+        e: 0,
+        r: 0,
+        d: 0,
+        f: 0
+      }
+    });
   },
 
   useAbility: (abilityKey, position, direction) => {
