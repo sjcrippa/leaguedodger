@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react'
-import { useGameStore } from '../states/gameStore'
+import { useGameStore } from '../stores/gameStore'
 import { Vector3, Vector2, Mesh } from 'three'
 import { useThree } from '@react-three/fiber'
 

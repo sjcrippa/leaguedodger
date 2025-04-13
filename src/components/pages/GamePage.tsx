@@ -1,7 +1,8 @@
 import { Suspense, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { GameHUD } from '@components/game/GameHUD'
-import { GameScene } from '@components/game/GameScene'
+import { GameHUD } from '@/game/components/GameHUD'
+import { GameScene } from '@/game/components/GameScene'
+
 import type { WheelEvent } from 'react'
 
 export const GamePage = () => {

@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { Mesh, Vector3 } from 'three'
 import { useFrame } from '@react-three/fiber'
-import { useGameStore } from '../states/gameStore'
+import { useGameStore } from '../stores/gameStore'
 import { usePlayerControls } from '../hooks/usePlayerControls'
 
 export const Player = () => {
@@ -11,7 +11,7 @@ export const Player = () => {
   const velocity = useRef(new Vector3())
 
   // Handle movement in animation frame
-  useFrame((state, delta) => {
+  useFrame(() => {
     if (!meshRef.current || isGameOver) return
 
     if (controls.isMoving) {
@@ -43,8 +43,8 @@ export const Player = () => {
       castShadow
     >
       {/* Main body */}
-      <boxGeometry args={[1, 5, 1]} />
-      <meshStandardMaterial color="#3B82F6" />
+      <boxGeometry args={[1, 4, 1]} />
+      <meshStandardMaterial color="red" />
       
       {/* Eyes (optional decorative elements) */}
       <group position={[0, 1.5, 0.51]}>

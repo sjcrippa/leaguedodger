@@ -1,6 +1,7 @@
 import { PerspectiveCamera } from '@react-three/drei'
-import { Player } from '../../game/entities/Player'
-import { DEFAULT_GAME_CONFIG } from '../../game/constants/gameConfig'
+import { Player } from '../entities/Player'
+import { DEFAULT_GAME_CONFIG } from '../constants/gameConfig'
+import { AbilitiesManager } from './AbilitiesManager'
 
 export const GameScene = () => {
   return (
@@ -38,6 +39,9 @@ export const GameScene = () => {
 
       {/* Player */}
       <Player />
+
+      {/* Abilities Manager */}
+      <AbilitiesManager />
     </>
   )
 } 
