@@ -1,22 +1,24 @@
-import { useRef, useEffect } from "react";
 import { Mesh, Vector3 } from "three";
+import { useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
+
 import { useGameStore } from "../stores/gameStore";
-import { usePlayerControls } from "../hooks/usePlayerControls";
 import { usePlayerStore } from "../stores/playerStore";
+import { usePlayerControls } from "../hooks/usePlayerControls";
 
 export const Player = () => {
   const meshRef = useRef<Mesh>(null);
   const isGameOver = useGameStore(state => state.isGameOver);
   const controls = usePlayerControls(meshRef);
   const updatePosition = usePlayerStore(state => state.updatePosition);
+  const playerPosition = usePlayerStore(state => state.state.position);
 
-  // Update player position in store
+  // Set initial position when component mounts and sync with store position changes
   useEffect(() => {
     if (meshRef.current) {
-      updatePosition(meshRef.current.position);
+      meshRef.current.position.copy(playerPosition);
     }
-  }, []);
+  }, [playerPosition]);
 
   // Handle movement in animation frame
   useFrame(() => {
@@ -40,16 +42,11 @@ export const Player = () => {
   });
 
   return (
-    <mesh
-      ref={meshRef}
-      position={[0, 2.5, 0]}
-      castShadow
-      name="player"
-    >
+    <mesh ref={meshRef} castShadow name="player">
       {/* Main body */}
       <boxGeometry args={[1.5, 4, 1.5]} />
       <meshStandardMaterial color="blue" />
-      
+
       {/* Eyes (optional decorative elements) */}
       <group position={[0, 1.5, 0.9]}>
         {/* Right eye */}

@@ -1,6 +1,10 @@
-import { create } from "zustand";
 import { Vector3 } from "three";
+import { create } from "zustand";
+
 import { PlayerState, PlayerStatus, PlayerConfig } from "../types/player";
+
+// Store the initial position
+const INITIAL_POSITION = new Vector3(0, 2.5, 0);
 
 const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
   baseSpeed: 0.15,
@@ -10,9 +14,9 @@ const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
   flashCooldown: 5,
   shieldDuration: 2,
   shieldCooldown: 8,
-  invulnerabilityDuration: 1, // 1 segundo de invulnerabilidad después de recibir daño
+  invulnerabilityDuration: 1, // 1 second of invulnerability after taking damage
   maxHealth: 100,
-  currentHealth: 100
+  currentHealth: 100,
 };
 
 interface PlayerStore {
@@ -28,126 +32,132 @@ interface PlayerStore {
   reset: () => void;
 }
 
-export const usePlayerStore = create<PlayerStore>((set) => ({
+export const usePlayerStore = create<PlayerStore>(set => ({
   state: {
     isAlive: true,
     isInvulnerable: false,
     isDashing: false,
     isFlashing: false,
-    position: new Vector3(0, 2.5, 0),
-    velocity: new Vector3()
+    position: INITIAL_POSITION.clone(),
+    velocity: new Vector3(),
   },
   status: {
     isMoving: false,
     isUsingAbility: false,
-    currentAbility: null
+    currentAbility: null,
   },
   config: DEFAULT_PLAYER_CONFIG,
 
-  takeDamage: () => set((state) => {
-    if (state.state.isInvulnerable) return state;
-    
-    // Reducir la vida
-    const newHealth = state.config.currentHealth - 100; // Daño fijo de 50 por ahora
-    
-    // Hacer al jugador invulnerable temporalmente
-    state.state.isInvulnerable = true;
-    setTimeout(() => {
-      set(state => ({
-        state: {
-          ...state.state,
-          isInvulnerable: false
-        }
-      }));
-    }, DEFAULT_PLAYER_CONFIG.invulnerabilityDuration * 1000);
+  takeDamage: () =>
+    set(state => {
+      if (state.state.isInvulnerable) return state;
 
-    // Si la vida llega a 0, el jugador muere
-    if (newHealth <= 0) {
-      console.log('Player has died!');
+      // Reduce the health
+      const newHealth = state.config.currentHealth - 100; // Fixed damage of 100 for now
+
+      // Make the player temporarily invulnerable
+      state.state.isInvulnerable = true;
+      setTimeout(() => {
+        set(state => ({
+          state: {
+            ...state.state,
+            isInvulnerable: false,
+          },
+        }));
+      }, DEFAULT_PLAYER_CONFIG.invulnerabilityDuration * 1000);
+
+      // If the health reaches 0, the player dies
+      if (newHealth <= 0) {
+        return {
+          state: {
+            ...state.state,
+            isAlive: false,
+            isInvulnerable: true,
+          },
+          config: {
+            ...state.config,
+            currentHealth: 0,
+          },
+        };
+      }
+
       return {
         state: {
           ...state.state,
-          isAlive: false,
-          isInvulnerable: true
+          isInvulnerable: true,
         },
         config: {
           ...state.config,
-          currentHealth: 0
-        }
+          currentHealth: newHealth,
+        },
       };
-    }
+    }),
 
-    return {
+  setInvulnerable: isInvulnerable =>
+    set(state => ({
       state: {
         ...state.state,
-        isInvulnerable: true
+        isInvulnerable,
       },
-      config: {
-        ...state.config,
-        currentHealth: newHealth
-      }
-    };
-  }),
+    })),
 
-  setInvulnerable: (isInvulnerable) => set((state) => ({
-    state: {
-      ...state.state,
-      isInvulnerable
-    }
-  })),
+  setDashing: isDashing =>
+    set(state => ({
+      state: {
+        ...state.state,
+        isDashing,
+      },
+      status: {
+        ...state.status,
+        isUsingAbility: isDashing,
+        currentAbility: isDashing ? "e" : null,
+      },
+    })),
 
-  setDashing: (isDashing) => set((state) => ({
-    state: {
-      ...state.state,
-      isDashing
-    },
-    status: {
-      ...state.status,
-      isUsingAbility: isDashing,
-      currentAbility: isDashing ? 'e' : null
-    }
-  })),
+  setFlashing: isFlashing =>
+    set(state => ({
+      state: {
+        ...state.state,
+        isFlashing,
+      },
+      status: {
+        ...state.status,
+        isUsingAbility: isFlashing,
+        currentAbility: isFlashing ? "r" : null,
+      },
+    })),
 
-  setFlashing: (isFlashing) => set((state) => ({
-    state: {
-      ...state.state,
-      isFlashing
-    },
-    status: {
-      ...state.status,
-      isUsingAbility: isFlashing,
-      currentAbility: isFlashing ? 'r' : null
-    }
-  })),
+  updatePosition: position =>
+    set(state => ({
+      state: {
+        ...state.state,
+        position,
+      },
+    })),
 
-  updatePosition: (position) => set((state) => ({
-    state: {
-      ...state.state,
-      position
-    }
-  })),
+  updateVelocity: velocity =>
+    set(state => ({
+      state: {
+        ...state.state,
+        velocity,
+      },
+    })),
 
-  updateVelocity: (velocity) => set((state) => ({
-    state: {
-      ...state.state,
-      velocity
-    }
-  })),
-
-  reset: () => set({
-    state: {
-      isAlive: true,
-      isInvulnerable: false,
-      isDashing: false,
-      isFlashing: false,
-      position: new Vector3(0, 2.5, 0),
-      velocity: new Vector3()
-    },
-    status: {
-      isMoving: false,
-      isUsingAbility: false,
-      currentAbility: null
-    },
-    config: DEFAULT_PLAYER_CONFIG
-  })
+  reset: () =>
+    set({
+      state: {
+        isAlive: true,
+        isInvulnerable: false,
+        isDashing: false,
+        isFlashing: false,
+        position: INITIAL_POSITION.clone(),
+        velocity: new Vector3(),
+      },
+      status: {
+        isMoving: false,
+        isUsingAbility: false,
+        currentAbility: null,
+      },
+      config: DEFAULT_PLAYER_CONFIG,
+    }),
 }));

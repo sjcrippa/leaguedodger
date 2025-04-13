@@ -1,12 +1,18 @@
-import { create } from "zustand";
 import { Vector3 } from "three";
-import { Ability, Projectile, AbilityKey } from "../types/abilities";
+import { create } from "zustand";
+
 import { ABILITIES_CONFIG } from "../constants/abilities";
+import { Projectile, AbilityKey } from "../types/abilities";
 
 interface AbilitiesState {
   projectiles: Projectile[];
   cooldowns: { [key: string]: number };
-  addProjectile: (position: Vector3, direction: Vector3, source: 'player' | 'enemy', speed?: number) => void;
+  addProjectile: (
+    position: Vector3,
+    direction: Vector3,
+    source: "player" | "enemy",
+    speed?: number
+  ) => void;
   removeProjectile: (id: string) => void;
   useAbility: (abilityKey: string, position: Vector3, direction: Vector3) => boolean;
   castAbility: (abilityKey: AbilityKey, player: THREE.Object3D) => void;
@@ -22,7 +28,7 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
     e: 0,
     r: 0,
     d: 0,
-    f: 0
+    f: 0,
   },
 
   addProjectile: (position, direction, source, speed = 0.8) => {
@@ -33,7 +39,7 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
       direction: direction.normalize(),
       createdAt: Date.now(),
       source,
-      speed
+      speed,
     };
     set(state => ({ projectiles: [...state.projectiles, projectile] }));
   },
@@ -53,8 +59,8 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
         e: 0,
         r: 0,
         d: 0,
-        f: 0
-      }
+        f: 0,
+      },
     });
   },
 
@@ -85,7 +91,7 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
 
     // Create projectile for Q ability
     if (abilityKey === "q") {
-      get().addProjectile(position, direction, 'player');
+      get().addProjectile(position, direction, "player");
     }
 
     return true;
@@ -93,9 +99,7 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
 
   castAbility: (abilityKey, player) => {
     // Get player's forward direction based on rotation
-    const direction = new Vector3(0, 0, 1)
-      .applyQuaternion(player.quaternion)
-      .normalize();
+    const direction = new Vector3(0, 0, 1).applyQuaternion(player.quaternion).normalize();
 
     // Create projectile closer to the player
     const startPosition = player.position.clone().add(direction.clone().multiplyScalar(1.5));
@@ -104,28 +108,28 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
     get().useAbility(abilityKey, startPosition, direction);
   },
 
-  update: (delta) => {
+  update: delta => {
     // Clean up expired cooldowns and update projectile positions
     const now = Date.now();
     set(state => ({
       cooldowns: Object.entries(state.cooldowns).reduce((acc, [key, time]) => {
         const ability = ABILITIES_CONFIG[key];
         if (!ability) return acc;
-        
+
         const cooldownMs = ability.cooldown * 1000;
         if (now - time < cooldownMs) {
           acc[key] = time;
         }
         return acc;
       }, {} as { [key: string]: number }),
-      
+
       // Update projectile positions based on their individual speeds
       projectiles: state.projectiles.map(projectile => ({
         ...projectile,
-        position: projectile.position.clone().add(
-          projectile.direction.clone().multiplyScalar(delta * projectile.speed * 30)
-        )
-      }))
+        position: projectile.position
+          .clone()
+          .add(projectile.direction.clone().multiplyScalar(delta * projectile.speed * 30)),
+      })),
     }));
-  }
+  },
 }));
