@@ -3,8 +3,8 @@ import { Vector3 } from "three";
 import { PlayerState, PlayerStatus, PlayerConfig } from "../types/player";
 
 const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
-  baseSpeed: 0.07,
-  dashSpeed: 0.2,
+  baseSpeed: 0.15,
+  dashSpeed: 0.3,
   dashDuration: 0.3,
   flashDistance: 5,
   flashCooldown: 5,

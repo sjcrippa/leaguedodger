@@ -40,13 +40,18 @@ export const Player = () => {
   });
 
   return (
-    <mesh ref={meshRef} position={[0, 2.5, 0]} castShadow name="player">
+    <mesh
+      ref={meshRef}
+      position={[0, 2.5, 0]}
+      castShadow
+      name="player"
+    >
       {/* Main body */}
-      <boxGeometry args={[1, 4, 1]} />
+      <boxGeometry args={[1.5, 4, 1.5]} />
       <meshStandardMaterial color="red" />
-
+      
       {/* Eyes (optional decorative elements) */}
-      <group position={[0, 1.5, 0.51]}>
+      <group position={[0, 1.5, 0.9]}>
         {/* Right eye */}
         <mesh position={[0.2, 0, 0]}>
           <boxGeometry args={[0.2, 0.2, 0.1]} />

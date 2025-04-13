@@ -17,7 +17,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
   const controls = useRef<PlayerControls>({
     isMoving: false,
     targetPosition: new Vector3(),
-    moveSpeed: 0.07,
+    moveSpeed: 0.12,
   });
 
   // Procesar el movimiento del jugador hacia un punto
