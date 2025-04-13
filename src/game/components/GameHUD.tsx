@@ -1,7 +1,7 @@
 interface GameHUDProps {
-  score: number
-  health: number
-  energy: number
+  score: number;
+  health: number;
+  energy: number;
 }
 
 export const GameHUD = ({ score, health, energy }: GameHUDProps) => {
@@ -10,9 +10,7 @@ export const GameHUD = ({ score, health, energy }: GameHUDProps) => {
       <div className="flex justify-between items-start">
         {/* Score */}
         <div className="bg-black/50 backdrop-blur-sm rounded-lg px-6 py-3">
-          <p className="text-2xl font-bold text-white">
-            Puntuación: {score}
-          </p>
+          <p className="text-2xl font-bold text-white">Puntuación: {score}</p>
         </div>
 
         {/* <div className="flex gap-4">
@@ -38,5 +36,5 @@ export const GameHUD = ({ score, health, energy }: GameHUDProps) => {
         </div> */}
       </div>
     </div>
-  )
-} 
+  );
+};

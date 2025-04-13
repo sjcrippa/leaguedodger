@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react'
+import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { GameHUD } from '@/game/components/GameHUD'
 import { GameScene } from '@/game/components/GameScene'
@@ -6,11 +6,12 @@ import { GameScene } from '@/game/components/GameScene'
 import type { WheelEvent } from 'react'
 
 export const GamePage = () => {
-  const [gameState, setGameState] = useState({
+  // Temporary game state
+  const gameState = {
     score: 0,
     health: 100,
     energy: 100
-  })
+  }
 
   // Prevenir el zoom
   const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
@@ -38,4 +39,4 @@ export const GamePage = () => {
       </div>
     </div>
   )
-} 
+}

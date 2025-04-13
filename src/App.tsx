@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { MainLayout } from '@components/ui/layout/MainLayout'
-import { GameLayout } from '@components/ui/layout/GameLayout'
-import { HomePage } from '@components/pages/HomePage'
-import { GamePage } from '@components/pages/GamePage'
-import './index.css'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { MainLayout } from "@components/ui/layout/MainLayout";
+import { GameLayout } from "@components/ui/layout/GameLayout";
+import { HomePage } from "@components/pages/HomePage";
+import { GamePage } from "@components/pages/GamePage";
+import "./index.css";
 
 const NotFound = () => (
   <div className="flex flex-col items-center justify-center min-h-screen">
@@ -13,7 +13,7 @@ const NotFound = () => (
       Volver al inicio
     </a>
   </div>
-)
+);
 
 function App() {
   return (
@@ -34,7 +34,7 @@ function App() {
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

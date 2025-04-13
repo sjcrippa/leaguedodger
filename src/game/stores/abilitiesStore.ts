@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Vector3 } from "three";
-import { Projectile } from "../types/abilities";
+import { Projectile, AbilityKey } from "../types/abilities";
 import { ABILITIES_CONFIG } from "../constants/abilities";
 
 interface AbilitiesState {
@@ -9,6 +9,7 @@ interface AbilitiesState {
   addProjectile: (position: Vector3, direction: Vector3) => void;
   removeProjectile: (id: string) => void;
   useAbility: (abilityKey: string, position: Vector3, direction: Vector3) => boolean;
+  castAbility: (abilityKey: AbilityKey, player: THREE.Object3D) => void;
   update: (delta: number) => void;
 }
 
@@ -66,20 +67,41 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
     return true;
   },
 
-  update: delta => {
-    // Clean up expired cooldowns
+  castAbility: (abilityKey, player) => {
+    // Get player's forward direction based on rotation
+    const direction = new Vector3(0, 0, 1)
+      .applyQuaternion(player.quaternion)
+      .normalize();
+
+    // Create projectile closer to the player
+    const startPosition = player.position.clone().add(direction.clone().multiplyScalar(1.5));
+
+    // Use ability with position and direction
+    get().useAbility(abilityKey, startPosition, direction);
+  },
+
+  update: (delta) => {
+    // Clean up expired cooldowns and update projectile positions
     const now = Date.now();
     set(state => ({
       cooldowns: Object.entries(state.cooldowns).reduce((acc, [key, time]) => {
         const ability = ABILITIES_CONFIG[key];
         if (!ability) return acc;
-
+        
         const cooldownMs = ability.cooldown * 1000;
         if (now - time < cooldownMs) {
           acc[key] = time;
         }
         return acc;
       }, {} as { [key: string]: number }),
+      
+      // Update projectile positions based on delta time
+      projectiles: state.projectiles.map(projectile => ({
+        ...projectile,
+        position: projectile.position.clone().add(
+          projectile.direction.clone().multiplyScalar(delta * 30) // 30 units per second
+        )
+      }))
     }));
-  },
+  }
 }));

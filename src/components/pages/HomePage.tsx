@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 export const HomePage = () => {
   return (
@@ -33,5 +33,5 @@ export const HomePage = () => {
         </div>
       </div>
     </div>
-  )
-} 
+  );
+};
