@@ -15,7 +15,9 @@ interface EnemyStore {
     attackCooldown: number
     projectileSpeed: number
     moveSpeed: number // Velocidad de movimiento del enemigo
+    minEnemyDistance: number
   }
+  isSpawning: boolean // Control de spawn
   addEnemy: (position: Vector3) => void
   removeEnemy: (id: string) => void
   spawnRandomEnemy: () => void
@@ -29,8 +31,9 @@ const DEFAULT_ENEMY_CONFIG = {
   spawnMargin: 5, // Margen desde los bordes del mapa
   attackRange: 20, // Rango de ataque
   attackCooldown: 2, // 2 segundos entre ataques
-  projectileSpeed: 0.8, // Velocidad del proyectil
-  moveSpeed: 0.1 // Velocidad de movimiento
+  projectileSpeed: 0.7, // Velocidad del proyectil
+  moveSpeed: 0.08, // Velocidad de movimiento
+  minEnemyDistance: 8 // Aumentado significativamente
 }
 
 const getRandomMapPosition = () => {
@@ -67,6 +70,7 @@ const getRandomMapPosition = () => {
 export const useEnemyStore = create<EnemyStore>((set, get) => ({
   enemies: [],
   config: DEFAULT_ENEMY_CONFIG,
+  isSpawning: false,
 
   addEnemy: (position) => {
     const id = Math.random().toString(36).substr(2, 9)
@@ -85,20 +89,45 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
       enemies: state.enemies.filter(enemy => enemy.id !== id)
     }))
 
-    setTimeout(() => {
-      const { enemies, config, spawnRandomEnemy } = get()
-      if (enemies.length < config.maxEnemies) {
-        spawnRandomEnemy()
-      }
-    }, get().config.spawnInterval)
+    // Solo programamos el próximo spawn si no hay uno en proceso
+    const { spawnRandomEnemy, isSpawning } = get()
+    if (!isSpawning) {
+      spawnRandomEnemy()
+    }
   },
 
   spawnRandomEnemy: () => {
-    const { enemies, config, addEnemy } = get()
-    if (enemies.length < config.maxEnemies) {
-      const position = getRandomMapPosition()
-      addEnemy(position)
+    const { enemies, config, isSpawning, addEnemy } = get()
+    const isPaused = useGameStore.getState().isPaused
+    const isGameOver = useGameStore.getState().isGameOver
+
+    // Verificar todas las condiciones que impiden el spawn
+    if (isSpawning || 
+        isPaused || 
+        isGameOver || 
+        enemies.length >= config.maxEnemies) {
+      return
     }
+
+    // Activar el lock de spawn
+    set({ isSpawning: true })
+
+    // Spawnear el enemigo
+    const position = getRandomMapPosition()
+    addEnemy(position)
+
+    // Programar el próximo spawn y liberar el lock
+    setTimeout(() => {
+      set({ isSpawning: false })
+      
+      // Verificar si podemos spawnear otro
+      const currentState = get()
+      if (currentState.enemies.length < config.maxEnemies && 
+          !useGameStore.getState().isPaused && 
+          !useGameStore.getState().isGameOver) {
+        currentState.spawnRandomEnemy()
+      }
+    }, config.spawnInterval)
   },
 
   updateEnemies: (playerPosition) => {
@@ -119,15 +148,52 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
         .subVectors(playerPosition, enemy.position)
         .normalize()
 
-      // 2. Mover al enemigo hacia el jugador (sin límite de distancia)
-      enemy.position.x += directionToPlayer.x * config.moveSpeed
-      enemy.position.z += directionToPlayer.z * config.moveSpeed
-      enemy.position.y = 3 // Mantener altura constante
+      // 2. Calcular separación de otros enemigos
+      const separationForce = new Vector3()
+      let nearbyEnemies = 0
 
-      // 3. Rotar al enemigo para que mire al jugador
+      updatedEnemies.forEach(otherEnemy => {
+        if (otherEnemy.id === enemy.id || !otherEnemy.isAlive) return
+
+        const distance = enemy.position.distanceTo(otherEnemy.position)
+        if (distance < config.minEnemyDistance) {
+          nearbyEnemies++
+          const awayFromOther = new Vector3()
+            .subVectors(enemy.position, otherEnemy.position)
+            .normalize()
+            .multiplyScalar(Math.pow((config.minEnemyDistance - distance) / config.minEnemyDistance, 3)) // Fuerza cúbica
+          
+          separationForce.add(awayFromOther)
+        }
+      })
+
+      // Normalizar la fuerza de separación si hay enemigos cercanos
+      if (nearbyEnemies > 0) {
+        separationForce.divideScalar(nearbyEnemies)
+      }
+
+      // 3. Combinar movimiento hacia el jugador y separación
+      const moveDirection = new Vector3()
+      
+      // Si hay enemigos muy cerca, priorizar mucho más la separación
+      const followWeight = nearbyEnemies > 0 ? 0.2 : 0.8     // Reducido cuando hay enemigos cerca
+      const separationWeight = nearbyEnemies > 0 ? 0.8 : 0.2 // Aumentado cuando hay enemigos cerca
+
+      moveDirection.addVectors(
+        directionToPlayer.multiplyScalar(followWeight),
+        separationForce.multiplyScalar(separationWeight)
+      ).normalize()
+
+      // 4. Aplicar movimiento con velocidad ajustada
+      const finalSpeed = nearbyEnemies > 0 ? config.moveSpeed * 1.5 : config.moveSpeed
+      enemy.position.x += moveDirection.x * finalSpeed
+      enemy.position.z += moveDirection.z * finalSpeed
+      enemy.position.y = 3
+
+      // 5. Rotar al enemigo (siempre mirando al jugador)
       enemy.rotation.y = Math.atan2(directionToPlayer.x, directionToPlayer.z)
 
-      // 4. Verificar si puede atacar
+      // 6. Lógica de ataque
       const distanceToPlayer = enemy.position.distanceTo(playerPosition)
       const timeSinceLastAttack = (now - enemy.lastAttackTime) / 1000
 
@@ -153,19 +219,11 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
   },
 
   reset: () => {
-    set({ enemies: [] })
+    // Limpiar estado y asegurarnos de que no hay spawns pendientes
+    set({ enemies: [], isSpawning: false })
     
-    const spawnEnemiesGradually = (remaining: number) => {
-      const { spawnRandomEnemy } = get()
-      const isPaused = useGameStore.getState().isPaused
-      const isGameOver = useGameStore.getState().isGameOver
-
-      if (remaining > 0 && !isPaused && !isGameOver) {
-        spawnRandomEnemy()
-        setTimeout(() => spawnEnemiesGradually(remaining - 1), DEFAULT_ENEMY_CONFIG.spawnInterval)
-      }
-    }
-
-    spawnEnemiesGradually(DEFAULT_ENEMY_CONFIG.maxEnemies)
+    // Iniciar el ciclo de spawn con un único spawn inicial
+    const { spawnRandomEnemy } = get()
+    spawnRandomEnemy()
   }
 })) 
