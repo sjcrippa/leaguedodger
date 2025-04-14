@@ -18,6 +18,7 @@ export const GameScene = () => {
   const removeProjectile = useAbilitiesStore(state => state.removeProjectile);
   const playerPosition = usePlayerStore(state => state.state.position);
   const isGameOver = useGameStore(state => state.isGameOver);
+  const isPaused = useGameStore(state => state.isPaused);
 
   const enemies = useEnemyStore(state => state.enemies);
   const reset = useEnemyStore(state => state.reset);
@@ -31,7 +32,7 @@ export const GameScene = () => {
 
   // Actualizar enemigos en cada frame
   useFrame(() => {
-    if (isGameOver) return;
+    if (isGameOver || isPaused) return;
     updateEnemies(playerPosition);
   });
 

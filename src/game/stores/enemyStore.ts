@@ -106,7 +106,10 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
     const { enemies, config } = get()
     const addProjectile = useAbilitiesStore.getState().addProjectile
     const enemyProjectilesEnabled = useGameStore.getState().enemyProjectilesEnabled
+    const isPaused = useGameStore.getState().isPaused
     const updatedEnemies = [...enemies]
+
+    if (isPaused) return
 
     updatedEnemies.forEach(enemy => {
       if (!enemy.isAlive) return
@@ -153,8 +156,11 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
     set({ enemies: [] })
     
     const spawnEnemiesGradually = (remaining: number) => {
-      if (remaining > 0) {
-        const { spawnRandomEnemy } = get()
+      const { spawnRandomEnemy } = get()
+      const isPaused = useGameStore.getState().isPaused
+      const isGameOver = useGameStore.getState().isGameOver
+
+      if (remaining > 0 && !isPaused && !isGameOver) {
         spawnRandomEnemy()
         setTimeout(() => spawnEnemiesGradually(remaining - 1), DEFAULT_ENEMY_CONFIG.spawnInterval)
       }

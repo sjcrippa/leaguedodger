@@ -20,6 +20,13 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     moveSpeed: 0.12,
   });
 
+  // Detener movimiento cuando se pausa
+  useEffect(() => {
+    if (isPaused) {
+      controls.current.isMoving = false;
+    }
+  }, [isPaused]);
+
   // Procesar el movimiento del jugador hacia un punto
   const processMovement = useCallback(
     (x: number, y: number) => {
@@ -68,7 +75,12 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     let animationFrameId: number;
 
     const updatePosition = () => {
-      if (!ref.current || isPaused || isGameOver) return;
+      if (!ref.current || isPaused || isGameOver) {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
+        return;
+      }
 
       if (controls.current.isMoving) {
         const currentPos = ref.current.position;
@@ -76,10 +88,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
         const distance = currentPos.distanceTo(targetPos);
 
         if (distance > 0.1) {
-          // Calculate direction vector
           const direction = new Vector3().subVectors(targetPos, currentPos).normalize();
-
-          // Move at constant speed
           currentPos.add(direction.multiplyScalar(controls.current.moveSpeed));
         } else {
           controls.current.isMoving = false;
