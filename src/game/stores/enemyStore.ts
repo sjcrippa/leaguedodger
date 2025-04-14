@@ -4,6 +4,7 @@ import { EnemyState } from '../types/enemy'
 import { DEFAULT_GAME_CONFIG } from '../constants/gameConfig'
 import { useAbilitiesStore } from './abilitiesStore'
 import { useGameStore } from './gameStore'
+import { useLevelStore } from './levelStore'
 
 interface EnemyStore {
   enemies: EnemyState[]
@@ -89,23 +90,24 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
       enemies: state.enemies.filter(enemy => enemy.id !== id)
     }))
 
-    // Solo programamos el próximo spawn si no hay uno en proceso
-    const { spawnRandomEnemy, isSpawning } = get()
-    if (!isSpawning) {
-      spawnRandomEnemy()
-    }
+    // Incrementar el contador de enemigos derrotados
+    useLevelStore.getState().incrementEnemiesDefeated();
   },
 
   spawnRandomEnemy: () => {
     const { enemies, config, isSpawning, addEnemy } = get()
     const isPaused = useGameStore.getState().isPaused
     const isGameOver = useGameStore.getState().isGameOver
+    const { enemiesDefeated, enemiesPerLevel } = useLevelStore.getState()
+
+    // Calcular el total de enemigos (derrotados + actuales)
+    const totalEnemies = enemiesDefeated + enemies.length
 
     // Verificar todas las condiciones que impiden el spawn
     if (isSpawning || 
         isPaused || 
         isGameOver || 
-        enemies.length >= config.maxEnemies) {
+        totalEnemies >= enemiesPerLevel) {
       return
     }
 
@@ -122,7 +124,15 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
       
       // Verificar si podemos spawnear otro
       const currentState = get()
-      if (currentState.enemies.length < config.maxEnemies && 
+      const { enemiesDefeated: currentDefeated, enemiesPerLevel } = useLevelStore.getState()
+      const currentEnemies = currentState.enemies.length
+      const currentTotal = currentDefeated + currentEnemies
+      
+      // Solo spawnear si:
+      // 1. No hemos alcanzado el total de enemigos permitidos por nivel
+      // 2. El juego no está pausado
+      // 3. El juego no ha terminado
+      if (currentTotal < enemiesPerLevel && 
           !useGameStore.getState().isPaused && 
           !useGameStore.getState().isGameOver) {
         currentState.spawnRandomEnemy()

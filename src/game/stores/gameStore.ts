@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useLevelStore } from "./levelStore";
 
 // Game state types
 interface GameState {
@@ -6,6 +7,7 @@ interface GameState {
   isGameOver: boolean;
   isPaused: boolean;
   enemyProjectilesEnabled: boolean;
+  currentLevel: number;
   // Game actions
   setScore: (score: number) => void;
   incrementScore: () => void;
@@ -21,6 +23,7 @@ const initialState = {
   isGameOver: false,
   isPaused: false,
   enemyProjectilesEnabled: true,
+  currentLevel: 1,
 };
 
 // Create the store
@@ -35,5 +38,8 @@ export const useGameStore = create<GameState>(set => ({
   toggleEnemyProjectiles: () => set((state) => ({ 
     enemyProjectilesEnabled: !state.enemyProjectilesEnabled 
   })),
-  resetGame: () => set(initialState),
+  resetGame: () => {
+    set(initialState);
+    useLevelStore.getState().resetLevel();
+  },
 }));

@@ -24,4 +24,8 @@ todo.md
 *.sln
 *.sw?
 
+# Cursor configuration
+.cursor/
+.cursor/*
+
 todo.md
