@@ -1,14 +1,14 @@
 import { useEffect } from "react";
-
-import { PauseIcon, PlayIcon } from "lucide-react";
 import { useGameStore } from "../stores/gameStore";
-import { useLevelStore } from '../stores/levelStore';
+import { PauseIcon, PlayIcon, CheckCircleIcon } from "lucide-react";
+
+import { useLevelStore } from "../stores/levelStore";
 
 export const GameHUD = () => {
   const { score } = useGameStore();
   const { currentLevel, enemiesDefeated, enemiesPerLevel, isLevelComplete } = useLevelStore();
-  const enemyProjectilesEnabled = useGameStore(state => state.enemyProjectilesEnabled);
-  const toggleEnemyProjectiles = useGameStore(state => state.toggleEnemyProjectiles);
+  //const enemyProjectilesEnabled = useGameStore(state => state.enemyProjectilesEnabled);
+  //const toggleEnemyProjectiles = useGameStore(state => state.toggleEnemyProjectiles);
   const isPaused = useGameStore(state => state.isPaused);
   const setPaused = useGameStore(state => state.setPaused);
 
@@ -29,16 +29,16 @@ export const GameHUD = () => {
         <div className="flex justify-between items-start">
           {/* Score and Level Info */}
           <div className="bg-black/50 backdrop-blur-sm rounded-lg px-6 py-3">
-            <div className="flex items-center gap-4">
-              <div className="text-3xl font-bold text-white">
-                <span className="text-yellow-400">Score:</span> {score}
-              </div>
-              <div className="text-xl text-white">
+            <div className="flex flex-col items-start justify-start">
+              <p className="font-bold">
                 <span className="text-blue-400">Level:</span> {currentLevel}
-              </div>
-              <div className="text-xl text-white">
+              </p>
+              <p className="font-bold">
                 <span className="text-red-400">Enemies:</span> {enemiesDefeated}/{enemiesPerLevel}
-              </div>
+              </p>
+            </div>
+            <div className="mt-4 text-3xl font-bold text-white">
+              <span className="text-yellow-400">Score:</span> {score}
             </div>
           </div>
 
@@ -51,14 +51,14 @@ export const GameHUD = () => {
               {isPaused ? <PlayIcon className="w-12 h-12" /> : <PauseIcon className="w-12 h-12" />}
             </button>
 
-            <button
+            {/* <button
               onClick={toggleEnemyProjectiles}
               className={`px-4 py-2 rounded ${
                 enemyProjectilesEnabled ? "bg-red-500" : "bg-green-500"
               }`}
             >
               {enemyProjectilesEnabled ? "Pausar Proyectiles" : "Activar Proyectiles"}
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
@@ -67,14 +67,17 @@ export const GameHUD = () => {
       {isLevelComplete && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center z-50">
           <div className="bg-black/70 p-8 rounded-lg text-center">
-            <h2 className="text-3xl font-bold text-white mb-4">¡Nivel Completado!</h2>
+            <h2 className="text-3xl font-bold text-white mb-4">¡Bien hecho!</h2>
+            <div className="mt-10 w-full flex justify-center items-center h-12 text-green-500 mb-6 animate-bounce animate-infinite animate-duration-[2000ms] animate-ease-in-out">
+              <CheckCircleIcon className="w-12 h-12" />
+            </div>
             <p className="text-xl text-white mb-6">Nivel {currentLevel} completado con éxito</p>
-            <p className="text-xl text-yellow-400 mb-6">Puntos ganados: {enemiesDefeated * 25}</p>
+            <p className="text-xl text-yellow-400 mb-6 font-bold">Puntos ganados: {enemiesDefeated * 25}</p>
             <button
               onClick={() => useLevelStore.getState().incrementLevel()}
               className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
             >
-              Continuar al Nivel {currentLevel + 1}
+              NIVEL {currentLevel + 1}
             </button>
           </div>
         </div>
