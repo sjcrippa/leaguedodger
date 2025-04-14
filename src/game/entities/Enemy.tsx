@@ -1,40 +1,34 @@
-import { useRef } from 'react'
-import { Mesh, Vector3 } from 'three'
-import { useFrame } from '@react-three/fiber'
-import { EnemyState } from '../types/enemy'
+import { useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+
+import { EnemyState } from "../types/enemy";
 
 interface EnemyProps {
-  enemy: EnemyState
+  enemy: EnemyState;
 }
 
 export const Enemy = ({ enemy }: EnemyProps) => {
-  const groupRef = useRef<THREE.Group>(null)
+  const groupRef = useRef<THREE.Group>(null);
 
-  // Actualizar la posición y rotación en cada frame
+  // Update position and rotation in each frame
   useFrame(() => {
-    if (!groupRef.current) return
-    
-    // Actualizar posición
-    groupRef.current.position.copy(enemy.position)
-    
-    // Actualizar rotación
-    groupRef.current.rotation.y = enemy.rotation.y
-  })
+    if (!groupRef.current) return;
+
+    // Update position
+    groupRef.current.position.copy(enemy.position);
+
+    // Update rotation
+    groupRef.current.rotation.y = enemy.rotation.y;
+  });
 
   return (
-    <group
-      ref={groupRef}
-      position={enemy.position}
-      name={`enemy-${enemy.id}`}
-    >
-      <mesh
-        castShadow
-      >
+    <group ref={groupRef} position={enemy.position} name={`enemy-${enemy.id}`}>
+      <mesh castShadow>
         {/* Main body */}
         <boxGeometry args={[2, 4, 2]} />
         <meshStandardMaterial color="purple" />
       </mesh>
-      
+
       {/* Eyes */}
       <group position={[0, 1, 1.01]}>
         {/* Right eye */}
@@ -49,5 +43,5 @@ export const Enemy = ({ enemy }: EnemyProps) => {
         </mesh>
       </group>
     </group>
-  )
-} 
+  );
+};
