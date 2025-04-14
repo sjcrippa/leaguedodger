@@ -2,12 +2,11 @@ import { useEffect } from "react";
 
 import { PauseIcon, PlayIcon } from "lucide-react";
 import { useGameStore } from "../stores/gameStore";
+import { useLevelStore } from '../stores/levelStore';
 
-interface GameHUDProps {
-  score: number;
-}
-
-export const GameHUD = ({ score }: GameHUDProps) => {
+export const GameHUD = () => {
+  const { score } = useGameStore();
+  const { currentLevel, enemiesDefeated, enemiesPerLevel, isLevelComplete } = useLevelStore();
   const enemyProjectilesEnabled = useGameStore(state => state.enemyProjectilesEnabled);
   const toggleEnemyProjectiles = useGameStore(state => state.toggleEnemyProjectiles);
   const isPaused = useGameStore(state => state.isPaused);
@@ -28,9 +27,11 @@ export const GameHUD = ({ score }: GameHUDProps) => {
     <>
       <div className="container mx-auto px-4 py-6">
         <div className="flex justify-between items-start">
-          {/* Score */}
+          {/* Score and Level Info */}
           <div className="bg-black/50 backdrop-blur-sm rounded-lg px-6 py-3">
             <p className="text-2xl font-bold text-white">Puntuación: {score}</p>
+            <p className="text-xl text-white">Nivel: {currentLevel}</p>
+            <p className="text-xl text-white">Enemigos: {enemiesDefeated}/{enemiesPerLevel}</p>
           </div>
 
           {/* Controls */}
@@ -53,6 +54,22 @@ export const GameHUD = ({ score }: GameHUDProps) => {
           </div>
         </div>
       </div>
+
+      {/* Level Complete Overlay */}
+      {isLevelComplete && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+          <div className="bg-black/70 p-8 rounded-lg text-center">
+            <h2 className="text-3xl font-bold text-white mb-4">¡Nivel Completado!</h2>
+            <p className="text-xl text-white mb-6">Nivel {currentLevel} completado con éxito</p>
+            <button
+              onClick={() => useLevelStore.getState().incrementLevel()}
+              className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+            >
+              Continuar al Nivel {currentLevel + 1}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Pause overlay */}
       {isPaused && (

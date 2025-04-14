@@ -17,6 +17,8 @@ interface EnemyStore {
     projectileSpeed: number
     moveSpeed: number // Velocidad de movimiento del enemigo
     minEnemyDistance: number
+    enemyHealth: number
+    enemyDamage: number
   }
   isSpawning: boolean // Control de spawn
   addEnemy: (position: Vector3) => void
@@ -24,6 +26,13 @@ interface EnemyStore {
   spawnRandomEnemy: () => void
   updateEnemies: (playerPosition: Vector3) => void
   reset: () => void
+  updateConfig: (config: {
+    enemiesPerLevel: number;
+    enemySpeed: number;
+    enemyHealth: number;
+    enemyDamage: number;
+    spawnInterval: number;
+  }) => void
 }
 
 const DEFAULT_ENEMY_CONFIG = {
@@ -34,7 +43,9 @@ const DEFAULT_ENEMY_CONFIG = {
   attackCooldown: 2, // 2 segundos entre ataques
   projectileSpeed: 0.7, // Velocidad del proyectil
   moveSpeed: 0.08, // Velocidad de movimiento
-  minEnemyDistance: 8 // Aumentado significativamente
+  minEnemyDistance: 8, // Aumentado significativamente
+  enemyHealth: 100,
+  enemyDamage: 10
 }
 
 const getRandomMapPosition = () => {
@@ -72,6 +83,19 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
   enemies: [],
   config: DEFAULT_ENEMY_CONFIG,
   isSpawning: false,
+
+  updateConfig: (newConfig) => {
+    set({
+      config: {
+        ...DEFAULT_ENEMY_CONFIG,
+        maxEnemies: newConfig.enemiesPerLevel,
+        spawnInterval: newConfig.spawnInterval,
+        moveSpeed: newConfig.enemySpeed,
+        enemyHealth: newConfig.enemyHealth,
+        enemyDamage: newConfig.enemyDamage
+      }
+    });
+  },
 
   addEnemy: (position) => {
     const id = Math.random().toString(36).substr(2, 9)

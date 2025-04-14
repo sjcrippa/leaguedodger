@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useEnemyStore } from "./enemyStore";
 
 interface LevelState {
   currentLevel: number;
@@ -11,12 +12,27 @@ interface LevelState {
   incrementEnemiesDefeated: () => void;
   checkLevelCompletion: () => void;
   resetLevel: () => void;
+  setLevelComplete: (isComplete: boolean) => void;
 }
+
+// Función para calcular las propiedades del nivel
+const calculateLevelProperties = (level: number) => {
+  const baseEnemies = 5;
+  const levelMultiplier = Math.pow(1.2, level - 1); // 20% más por nivel
+  
+  return {
+    enemiesPerLevel: Math.floor(baseEnemies * levelMultiplier),
+    enemySpeed: 0.08 * levelMultiplier,
+    enemyHealth: 100 * levelMultiplier,
+    enemyDamage: 10 * levelMultiplier,
+    spawnInterval: Math.max(800, 2000 / levelMultiplier) // Mínimo 800ms
+  };
+};
 
 const initialState = {
   currentLevel: 1,
-  maxLevel: 10, // Máximo de niveles
-  enemiesPerLevel: 5, // Enemigos por nivel
+  maxLevel: 10,
+  enemiesPerLevel: 5,
   enemiesDefeated: 0,
   isLevelComplete: false,
 };
@@ -25,11 +41,18 @@ export const useLevelStore = create<LevelState>((set, get) => ({
   ...initialState,
 
   incrementLevel: () => {
-    set(state => ({ 
-      currentLevel: Math.min(state.currentLevel + 1, state.maxLevel),
+    const nextLevel = Math.min(get().currentLevel + 1, get().maxLevel);
+    const levelProps = calculateLevelProperties(nextLevel);
+    
+    set(() => ({ 
+      currentLevel: nextLevel,
+      enemiesPerLevel: levelProps.enemiesPerLevel,
       enemiesDefeated: 0,
       isLevelComplete: false
     }));
+
+    // Actualizar la configuración de enemigos
+    useEnemyStore.getState().updateConfig(levelProps);
   },
 
   incrementEnemiesDefeated: () => {
@@ -43,11 +66,19 @@ export const useLevelStore = create<LevelState>((set, get) => ({
     const { enemiesDefeated, enemiesPerLevel } = get();
     if (enemiesDefeated >= enemiesPerLevel) {
       set({ isLevelComplete: true });
-      // Aquí podríamos agregar lógica adicional cuando se completa un nivel
     }
   },
 
+  setLevelComplete: (isComplete: boolean) => {
+    set({ isLevelComplete: isComplete });
+  },
+
   resetLevel: () => {
-    set(initialState);
+    const initialProps = calculateLevelProperties(1);
+    set({
+      ...initialState,
+      enemiesPerLevel: initialProps.enemiesPerLevel
+    });
+    useEnemyStore.getState().updateConfig(initialProps);
   }
 })); 
