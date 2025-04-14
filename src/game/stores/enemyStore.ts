@@ -15,12 +15,12 @@ interface EnemyStore {
     attackRange: number
     attackCooldown: number
     projectileSpeed: number
-    moveSpeed: number // Velocidad de movimiento del enemigo
+    moveSpeed: number // Enemy movement speed
     minEnemyDistance: number
     enemyHealth: number
     enemyDamage: number
   }
-  isSpawning: boolean // Control de spawn
+  isSpawning: boolean // Spawn control
   addEnemy: (position: Vector3) => void
   removeEnemy: (id: string) => void
   spawnRandomEnemy: () => void
@@ -37,13 +37,13 @@ interface EnemyStore {
 
 const DEFAULT_ENEMY_CONFIG = {
   maxEnemies: 5,
-  spawnInterval: 2000, // 2 segundos entre spawns
-  spawnMargin: 5, // Margen desde los bordes del mapa
-  attackRange: 20, // Rango de ataque
-  attackCooldown: 2, // 2 segundos entre ataques
-  projectileSpeed: 0.7, // Velocidad del proyectil
-  moveSpeed: 0.08, // Velocidad de movimiento
-  minEnemyDistance: 8, // Aumentado significativamente
+  spawnInterval: 2000, // 2 seconds between spawns
+  spawnMargin: 5, // Margin from map edges
+  attackRange: 20, // Attack range
+  attackCooldown: 2, // 2 seconds between attacks
+  projectileSpeed: 0.7, // Projectile speed
+  moveSpeed: 0.08, // Movement speed
+  minEnemyDistance: 8, // Significantly increased
   enemyHealth: 100,
   enemyDamage: 10
 }
@@ -53,24 +53,24 @@ const getRandomMapPosition = () => {
   const mapHeight = DEFAULT_GAME_CONFIG.mapSize.height
   const margin = DEFAULT_ENEMY_CONFIG.spawnMargin
 
-  // Decidir aleatoriamente en qué borde aparecerá el enemigo
-  const side = Math.floor(Math.random() * 4) // 0: arriba, 1: derecha, 2: abajo, 3: izquierda
+  // Randomly decide which edge the enemy will appear on
+  const side = Math.floor(Math.random() * 4) // 0: top, 1: right, 2: bottom, 3: left
 
   let x, z
   switch (side) {
-    case 0: // Arriba
+    case 0: // Top
       x = Math.random() * (mapWidth - margin * 2) - (mapWidth / 2 - margin)
       z = -(mapHeight / 2) + margin
       break
-    case 1: // Derecha
+    case 1: // Right
       x = (mapWidth / 2) - margin
       z = Math.random() * (mapHeight - margin * 2) - (mapHeight / 2 - margin)
       break
-    case 2: // Abajo
+    case 2: // Bottom
       x = Math.random() * (mapWidth - margin * 2) - (mapWidth / 2 - margin)
       z = (mapHeight / 2) - margin
       break
-    default: // Izquierda
+    default: // Left
       x = -(mapWidth / 2) + margin
       z = Math.random() * (mapHeight - margin * 2) - (mapHeight / 2 - margin)
       break
@@ -114,8 +114,9 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
       enemies: state.enemies.filter(enemy => enemy.id !== id)
     }))
 
-    // Incrementar el contador de enemigos derrotados
+    // Increment defeated enemies counter and score
     useLevelStore.getState().incrementEnemiesDefeated();
+    useGameStore.getState().incrementScore();
   },
 
   spawnRandomEnemy: () => {
@@ -124,10 +125,10 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
     const isGameOver = useGameStore.getState().isGameOver
     const { enemiesDefeated, enemiesPerLevel } = useLevelStore.getState()
 
-    // Calcular el total de enemigos (derrotados + actuales)
+    // Calculate total enemies (defeated + current)
     const totalEnemies = enemiesDefeated + enemies.length
 
-    // Verificar todas las condiciones que impiden el spawn
+    // Check all conditions that prevent spawning
     if (isSpawning || 
         isPaused || 
         isGameOver || 
@@ -135,27 +136,27 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
       return
     }
 
-    // Activar el lock de spawn
+    // Activate spawn lock
     set({ isSpawning: true })
 
-    // Spawnear el enemigo
+    // Spawn enemy
     const position = getRandomMapPosition()
     addEnemy(position)
 
-    // Programar el próximo spawn y liberar el lock
+    // Schedule next spawn and release lock
     setTimeout(() => {
       set({ isSpawning: false })
       
-      // Verificar si podemos spawnear otro
+      // Check if we can spawn another
       const currentState = get()
       const { enemiesDefeated: currentDefeated, enemiesPerLevel } = useLevelStore.getState()
       const currentEnemies = currentState.enemies.length
       const currentTotal = currentDefeated + currentEnemies
       
-      // Solo spawnear si:
-      // 1. No hemos alcanzado el total de enemigos permitidos por nivel
-      // 2. El juego no está pausado
-      // 3. El juego no ha terminado
+      // Only spawn if:
+      // 1. We haven't reached the total allowed enemies per level
+      // 2. Game is not paused
+      // 3. Game is not over
       if (currentTotal < enemiesPerLevel && 
           !useGameStore.getState().isPaused && 
           !useGameStore.getState().isGameOver) {
@@ -177,12 +178,12 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
     updatedEnemies.forEach(enemy => {
       if (!enemy.isAlive) return
 
-      // 1. Calcular dirección hacia el jugador
+      // 1. Calculate direction to player
       const directionToPlayer = new Vector3()
         .subVectors(playerPosition, enemy.position)
         .normalize()
 
-      // 2. Calcular separación de otros enemigos
+      // 2. Calculate separation from other enemies
       const separationForce = new Vector3()
       let nearbyEnemies = 0
 
@@ -195,39 +196,39 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
           const awayFromOther = new Vector3()
             .subVectors(enemy.position, otherEnemy.position)
             .normalize()
-            .multiplyScalar(Math.pow((config.minEnemyDistance - distance) / config.minEnemyDistance, 3)) // Fuerza cúbica
+            .multiplyScalar(Math.pow((config.minEnemyDistance - distance) / config.minEnemyDistance, 3)) // Cubic force
           
           separationForce.add(awayFromOther)
         }
       })
 
-      // Normalizar la fuerza de separación si hay enemigos cercanos
+      // Normalize separation force if there are nearby enemies
       if (nearbyEnemies > 0) {
         separationForce.divideScalar(nearbyEnemies)
       }
 
-      // 3. Combinar movimiento hacia el jugador y separación
+      // 3. Combine movement towards player and separation
       const moveDirection = new Vector3()
       
-      // Si hay enemigos muy cerca, priorizar mucho más la separación
-      const followWeight = nearbyEnemies > 0 ? 0.2 : 0.8     // Reducido cuando hay enemigos cerca
-      const separationWeight = nearbyEnemies > 0 ? 0.8 : 0.2 // Aumentado cuando hay enemigos cerca
+      // If enemies are very close, prioritize separation much more
+      const followWeight = nearbyEnemies > 0 ? 0.2 : 0.8     // Reduced when enemies are nearby
+      const separationWeight = nearbyEnemies > 0 ? 0.8 : 0.2 // Increased when enemies are nearby
 
       moveDirection.addVectors(
         directionToPlayer.multiplyScalar(followWeight),
         separationForce.multiplyScalar(separationWeight)
       ).normalize()
 
-      // 4. Aplicar movimiento con velocidad ajustada
+      // 4. Apply movement with adjusted speed
       const finalSpeed = nearbyEnemies > 0 ? config.moveSpeed * 1.5 : config.moveSpeed
       enemy.position.x += moveDirection.x * finalSpeed
       enemy.position.z += moveDirection.z * finalSpeed
       enemy.position.y = 3
 
-      // 5. Rotar al enemigo (siempre mirando al jugador)
+      // 5. Rotate enemy (always facing player)
       enemy.rotation.y = Math.atan2(directionToPlayer.x, directionToPlayer.z)
 
-      // 6. Lógica de ataque
+      // 6. Attack logic
       const distanceToPlayer = enemy.position.distanceTo(playerPosition)
       const timeSinceLastAttack = (now - enemy.lastAttackTime) / 1000
 
@@ -253,10 +254,10 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
   },
 
   reset: () => {
-    // Limpiar estado y asegurarnos de que no hay spawns pendientes
+    // Clear state and ensure no pending spawns
     set({ enemies: [], isSpawning: false })
     
-    // Iniciar el ciclo de spawn con un único spawn inicial
+    // Start spawn cycle with a single initial spawn
     const { spawnRandomEnemy } = get()
     spawnRandomEnemy()
   }

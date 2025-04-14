@@ -29,9 +29,17 @@ export const GameHUD = () => {
         <div className="flex justify-between items-start">
           {/* Score and Level Info */}
           <div className="bg-black/50 backdrop-blur-sm rounded-lg px-6 py-3">
-            <p className="text-2xl font-bold text-white">Puntuación: {score}</p>
-            <p className="text-xl text-white">Nivel: {currentLevel}</p>
-            <p className="text-xl text-white">Enemigos: {enemiesDefeated}/{enemiesPerLevel}</p>
+            <div className="flex items-center gap-4">
+              <div className="text-3xl font-bold text-white">
+                <span className="text-yellow-400">Score:</span> {score}
+              </div>
+              <div className="text-xl text-white">
+                <span className="text-blue-400">Level:</span> {currentLevel}
+              </div>
+              <div className="text-xl text-white">
+                <span className="text-red-400">Enemies:</span> {enemiesDefeated}/{enemiesPerLevel}
+              </div>
+            </div>
           </div>
 
           {/* Controls */}
@@ -61,6 +69,7 @@ export const GameHUD = () => {
           <div className="bg-black/70 p-8 rounded-lg text-center">
             <h2 className="text-3xl font-bold text-white mb-4">¡Nivel Completado!</h2>
             <p className="text-xl text-white mb-6">Nivel {currentLevel} completado con éxito</p>
+            <p className="text-xl text-yellow-400 mb-6">Puntos ganados: {enemiesDefeated * 25}</p>
             <button
               onClick={() => useLevelStore.getState().incrementLevel()}
               className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"

@@ -32,7 +32,7 @@ export const useGameStore = create<GameState>(set => ({
 
   // Actions
   setScore: score => set({ score }),
-  incrementScore: () => set(state => ({ score: state.score + 1 })),
+  incrementScore: () => set(state => ({ score: state.score + 25 })),
   setGameOver: isOver => set({ isGameOver: isOver }),
   setPaused: isPaused => set({ isPaused }),
   toggleEnemyProjectiles: () => set((state) => ({ 
