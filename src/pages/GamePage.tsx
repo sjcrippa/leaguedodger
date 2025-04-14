@@ -1,20 +1,14 @@
 import { Suspense } from "react";
+import type { WheelEvent } from "react";
 import { Canvas } from "@react-three/fiber";
+
 import { GameHUD } from "@/game/components/GameHUD";
+import { useGameStore } from "@/game/stores/gameStore";
 import { GameScene } from "@/game/components/GameScene";
 import { GameOverScreen } from "@/game/components/GameOverScreen";
-import { useGameStore } from "@/game/stores/gameStore";
 
-import type { WheelEvent } from "react";
 
 export const GamePage = () => {
-  // Temporary game state
-  const gameState = {
-    score: 0,
-    health: 100,
-    energy: 100,
-  };
-
   const isGameOver = useGameStore(state => state.isGameOver);
 
   // Prevenir el zoom
@@ -48,7 +42,7 @@ export const GamePage = () => {
           zIndex: 2,
         }}
       >
-        <GameHUD score={gameState.score} />
+        <GameHUD />
       </div>
 
       {/* Game Over Screen */}
