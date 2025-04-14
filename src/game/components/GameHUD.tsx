@@ -5,10 +5,8 @@ import { PauseIcon, PlayIcon, CheckCircleIcon } from "lucide-react";
 import { useLevelStore } from "../stores/levelStore";
 
 export const GameHUD = () => {
-  const { score } = useGameStore();
+  const { score, countdown } = useGameStore();
   const { currentLevel, enemiesDefeated, enemiesPerLevel, isLevelComplete } = useLevelStore();
-  //const enemyProjectilesEnabled = useGameStore(state => state.enemyProjectilesEnabled);
-  //const toggleEnemyProjectiles = useGameStore(state => state.toggleEnemyProjectiles);
   const isPaused = useGameStore(state => state.isPaused);
   const setPaused = useGameStore(state => state.setPaused);
 
@@ -50,18 +48,18 @@ export const GameHUD = () => {
             >
               {isPaused ? <PlayIcon className="w-12 h-12" /> : <PauseIcon className="w-12 h-12" />}
             </button>
-
-            {/* <button
-              onClick={toggleEnemyProjectiles}
-              className={`px-4 py-2 rounded ${
-                enemyProjectilesEnabled ? "bg-red-500" : "bg-green-500"
-              }`}
-            >
-              {enemyProjectilesEnabled ? "Pausar Proyectiles" : "Activar Proyectiles"}
-            </button> */}
           </div>
         </div>
       </div>
+
+      {/* Countdown display */}
+      {countdown !== null && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+          <div className="text-9xl font-bold text-white animate-pulse">
+            {countdown}
+          </div>
+        </div>
+      )}
 
       {/* Level Complete Overlay */}
       {isLevelComplete && (
