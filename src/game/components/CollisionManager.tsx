@@ -33,6 +33,22 @@ export const CollisionManager = () => {
       const player = scene.getObjectByName("player");
       if (!player) return;
 
+      // Verificar colisiones con enemigos
+      enemies.forEach(enemy => {
+        if (!enemy.isAlive) return;
+
+        const enemyObj = scene.getObjectByName(`enemy-${enemy.id}`);
+        if (!enemyObj) return;
+
+        // Colisión física con enemigo
+        const distanceToEnemy = player.position.distanceTo(enemyObj.position);
+        if (distanceToEnemy < DEFAULT_GAME_CONFIG.collision.minCollisionDistance * 1.5 &&
+            !playerState.isInvulnerable) {
+          takeDamage();
+        }
+      });
+
+      // Verificar colisiones con proyectiles
       projectiles.forEach(projectile => {
         const distance = player.position.distanceTo(projectile.position);
         

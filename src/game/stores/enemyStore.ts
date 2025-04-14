@@ -14,6 +14,7 @@ interface EnemyStore {
     attackRange: number
     attackCooldown: number
     projectileSpeed: number
+    moveSpeed: number // Velocidad de movimiento del enemigo
   }
   addEnemy: (position: Vector3) => void
   removeEnemy: (id: string) => void
@@ -26,9 +27,10 @@ const DEFAULT_ENEMY_CONFIG = {
   maxEnemies: 5,
   spawnInterval: 2000, // 2 segundos entre spawns
   spawnMargin: 5, // Margen desde los bordes del mapa
-  attackRange: 30, // Aumentado para mejor alcance
+  attackRange: 20, // Rango de ataque
   attackCooldown: 2, // 2 segundos entre ataques
-  projectileSpeed: 0.8 // Velocidad del proyectil
+  projectileSpeed: 0.8, // Velocidad del proyectil
+  moveSpeed: 0.1 // Velocidad de movimiento
 }
 
 const getRandomMapPosition = () => {
@@ -83,7 +85,6 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
       enemies: state.enemies.filter(enemy => enemy.id !== id)
     }))
 
-    // Intentar spawnear un nuevo enemigo después de un delay
     setTimeout(() => {
       const { enemies, config, spawnRandomEnemy } = get()
       if (enemies.length < config.maxEnemies) {
@@ -110,30 +111,32 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
     updatedEnemies.forEach(enemy => {
       if (!enemy.isAlive) return
 
-      // Calcular dirección hacia el jugador
+      // 1. Calcular dirección hacia el jugador
       const directionToPlayer = new Vector3()
         .subVectors(playerPosition, enemy.position)
         .normalize()
 
-      // Actualizar rotación del enemigo
+      // 2. Mover al enemigo hacia el jugador (sin límite de distancia)
+      enemy.position.x += directionToPlayer.x * config.moveSpeed
+      enemy.position.z += directionToPlayer.z * config.moveSpeed
+      enemy.position.y = 3 // Mantener altura constante
+
+      // 3. Rotar al enemigo para que mire al jugador
       enemy.rotation.y = Math.atan2(directionToPlayer.x, directionToPlayer.z)
 
-      // Verificar si el jugador está en rango y si podemos atacar
+      // 4. Verificar si puede atacar
       const distanceToPlayer = enemy.position.distanceTo(playerPosition)
-      const timeSinceLastAttack = (now - enemy.lastAttackTime) / 1000 // convertir a segundos
+      const timeSinceLastAttack = (now - enemy.lastAttackTime) / 1000
 
       if (enemyProjectilesEnabled && 
           distanceToPlayer <= config.attackRange && 
           timeSinceLastAttack >= config.attackCooldown) {
-        // Disparar al jugador
         enemy.lastAttackTime = now
         
-        // Crear proyectil desde una posición ligeramente adelantada del enemigo
         const projectileStart = enemy.position.clone().add(
           directionToPlayer.clone().multiplyScalar(1.5)
         )
         
-        // Añadir el proyectil con la configuración del enemigo
         addProjectile(
           projectileStart,
           directionToPlayer,
@@ -149,7 +152,6 @@ export const useEnemyStore = create<EnemyStore>((set, get) => ({
   reset: () => {
     set({ enemies: [] })
     
-    // Spawnear enemigos iniciales gradualmente
     const spawnEnemiesGradually = (remaining: number) => {
       if (remaining > 0) {
         const { spawnRandomEnemy } = get()
