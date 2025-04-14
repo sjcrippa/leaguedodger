@@ -18,10 +18,11 @@ interface LevelState {
 // Función para calcular las propiedades del nivel
 const calculateLevelProperties = (level: number) => {
   const baseEnemies = 5;
+  const enemiesIncrement = 2; // Incremento de 2 enemigos por nivel
   const levelMultiplier = Math.pow(1.2, level - 1); // 20% más por nivel
   
   return {
-    enemiesPerLevel: Math.floor(baseEnemies * levelMultiplier),
+    enemiesPerLevel: baseEnemies + (enemiesIncrement * (level - 1)), // 5, 7, 9, 11, etc.
     enemySpeed: 0.08 * levelMultiplier,
     enemyHealth: 100 * levelMultiplier,
     enemyDamage: 10 * levelMultiplier,
@@ -51,8 +52,10 @@ export const useLevelStore = create<LevelState>((set, get) => ({
       isLevelComplete: false
     }));
 
-    // Actualizar la configuración de enemigos
-    useEnemyStore.getState().updateConfig(levelProps);
+    // Actualizar la configuración de enemigos y reiniciar el sistema
+    const enemyStore = useEnemyStore.getState();
+    enemyStore.updateConfig(levelProps);
+    enemyStore.reset();
   },
 
   incrementEnemiesDefeated: () => {
