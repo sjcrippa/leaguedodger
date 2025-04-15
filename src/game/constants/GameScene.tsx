@@ -28,17 +28,17 @@ export const GameScene = () => {
   const reset = useEnemyStore(state => state.reset);
   const updateEnemies = useEnemyStore(state => state.updateEnemies);
 
-  // Inicializar contador al comenzar el juego o nivel
+  // Initialize countdown when game starts
   useEffect(() => {
     if (isGameOver) return;
     startCountdown();
     resetPlayer(); // Reset player position when countdown starts
   }, [startCountdown, isGameOver, resetPlayer]);
 
-  // Actualizar contador cada segundo
+  // Update countdown every second
   useEffect(() => {
     if (countdown === null) return;
-    
+
     const interval = setInterval(() => {
       updateCountdown();
     }, 1000);
@@ -46,14 +46,14 @@ export const GameScene = () => {
     return () => clearInterval(interval);
   }, [countdown, updateCountdown]);
 
-  // Iniciar generación de enemigos cuando el contador termine
+  // Start enemy generation when countdown ends
   useEffect(() => {
     if (countdown === null && !isGameOver) {
       reset();
     }
   }, [countdown, reset, isGameOver]);
 
-  // Actualizar enemigos en cada frame
+  // Update enemies in each frame
   useFrame(() => {
     if (isGameOver || isPaused || countdown !== null) return;
     updateEnemies(playerPosition);

@@ -7,18 +7,17 @@ import { useGameStore } from "@/game/stores/gameStore";
 import { GameScene } from "@/game/constants/GameScene";
 import { GameOverScreen } from "@/game/components/GameOverScreen";
 
-
 export const GamePage = () => {
   const isGameOver = useGameStore(state => state.isGameOver);
 
-  // Prevenir el zoom
+  // Prevent zoom
   const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
 
   return (
     <div className="relative w-full h-screen">
-      {/* Canvas del juego ocupando toda la pantalla */}
+      {/* Game canvas occupying the entire screen */}
       <div
         className="absolute inset-0"
         onWheel={handleWheel}
@@ -34,7 +33,7 @@ export const GamePage = () => {
         </Canvas>
       </div>
 
-      {/* HUD superpuesto */}
+      {/* Overlay HUD */}
       <div
         className="absolute inset-x-0 top-0"
         style={{

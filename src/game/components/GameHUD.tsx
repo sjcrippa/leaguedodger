@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { useGameStore } from "../stores/gameStore";
 import { PauseIcon, PlayIcon, CheckCircleIcon } from "lucide-react";
 
+import { useGameStore } from "../stores/gameStore";
 import { useLevelStore } from "../stores/levelStore";
 
 export const GameHUD = () => {
@@ -55,9 +55,7 @@ export const GameHUD = () => {
       {/* Countdown display */}
       {countdown !== null && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center z-50">
-          <div className="text-9xl font-bold text-white animate-pulse">
-            {countdown}
-          </div>
+          <div className="text-9xl font-bold text-white animate-pulse">{countdown}</div>
         </div>
       )}
 
@@ -70,7 +68,9 @@ export const GameHUD = () => {
               <CheckCircleIcon className="w-12 h-12" />
             </div>
             <p className="text-xl text-white mb-6">Nivel {currentLevel} completado con éxito</p>
-            <p className="text-xl text-yellow-400 mb-6 font-bold">Puntos ganados: {enemiesDefeated * 25}</p>
+            <p className="text-xl text-yellow-400 mb-6 font-bold">
+              Puntos ganados: {enemiesDefeated * 25}
+            </p>
             <button
               onClick={() => useLevelStore.getState().incrementLevel()}
               className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"

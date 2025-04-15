@@ -15,18 +15,18 @@ interface LevelState {
   setLevelComplete: (isComplete: boolean) => void;
 }
 
-// Función para calcular las propiedades del nivel
+// Function to calculate the level properties
 const calculateLevelProperties = (level: number) => {
   const baseEnemies = 5;
-  const enemiesIncrement = 2; // Incremento de 2 enemigos por nivel
-  const levelMultiplier = Math.pow(1.2, level - 1); // 20% más por nivel
-  
+  const enemiesIncrement = 2;
+  const levelMultiplier = Math.pow(1.2, level - 1); // 20% more per level
+
   return {
-    enemiesPerLevel: baseEnemies + (enemiesIncrement * (level - 1)), // 5, 7, 9, 11, etc.
+    enemiesPerLevel: baseEnemies + enemiesIncrement * (level - 1), // 5, 7, 9, 11, etc.
     enemySpeed: 0.08 * levelMultiplier,
     enemyHealth: 100 * levelMultiplier,
     enemyDamage: 10 * levelMultiplier,
-    spawnInterval: Math.max(800, 2000 / levelMultiplier) // Mínimo 800ms
+    spawnInterval: Math.max(800, 2000 / levelMultiplier), // minimum 800ms
   };
 };
 
@@ -44,23 +44,23 @@ export const useLevelStore = create<LevelState>((set, get) => ({
   incrementLevel: () => {
     const nextLevel = Math.min(get().currentLevel + 1, get().maxLevel);
     const levelProps = calculateLevelProperties(nextLevel);
-    
-    set(() => ({ 
+
+    set(() => ({
       currentLevel: nextLevel,
       enemiesPerLevel: levelProps.enemiesPerLevel,
       enemiesDefeated: 0,
-      isLevelComplete: false
+      isLevelComplete: false,
     }));
 
-    // Actualizar la configuración de enemigos y reiniciar el sistema
+    // Update the enemies configuration and reset the system
     const enemyStore = useEnemyStore.getState();
     enemyStore.updateConfig(levelProps);
     enemyStore.reset();
   },
 
   incrementEnemiesDefeated: () => {
-    set(state => ({ 
-      enemiesDefeated: state.enemiesDefeated + 1 
+    set(state => ({
+      enemiesDefeated: state.enemiesDefeated + 1,
     }));
     get().checkLevelCompletion();
   },
@@ -80,8 +80,8 @@ export const useLevelStore = create<LevelState>((set, get) => ({
     const initialProps = calculateLevelProperties(1);
     set({
       ...initialState,
-      enemiesPerLevel: initialProps.enemiesPerLevel
+      enemiesPerLevel: initialProps.enemiesPerLevel,
     });
     useEnemyStore.getState().updateConfig(initialProps);
-  }
-})); 
+  },
+}));

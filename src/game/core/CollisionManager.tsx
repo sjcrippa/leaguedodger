@@ -33,7 +33,7 @@ export const CollisionManager = () => {
       const player = scene.getObjectByName("player");
       if (!player) return;
 
-      // Verificar colisiones con enemigos
+      // Check collisions with enemies
       enemies.forEach(enemy => {
         if (!enemy.isAlive) return;
 
@@ -42,29 +42,33 @@ export const CollisionManager = () => {
 
         // Colisión física con enemigo
         const distanceToEnemy = player.position.distanceTo(enemyObj.position);
-        if (distanceToEnemy < DEFAULT_GAME_CONFIG.collision.minCollisionDistance * 1.5 &&
-            !playerState.isInvulnerable) {
+        if (
+          distanceToEnemy < DEFAULT_GAME_CONFIG.collision.minCollisionDistance * 1.5 &&
+          !playerState.isInvulnerable
+        ) {
           takeDamage();
         }
       });
 
-      // Verificar colisiones con proyectiles
+      // Check collisions with projectiles
       projectiles.forEach(projectile => {
         const distance = player.position.distanceTo(projectile.position);
-        
-        // Colisión de proyectil enemigo con jugador
-        if (projectile.source === "enemy" && 
-            distance < DEFAULT_GAME_CONFIG.collision.minCollisionDistance &&
-            !playerState.isInvulnerable) {
+
+        // Projectile enemy collision with player
+        if (
+          projectile.source === "enemy" &&
+          distance < DEFAULT_GAME_CONFIG.collision.minCollisionDistance &&
+          !playerState.isInvulnerable
+        ) {
           removeProjectile(projectile.id);
           takeDamage();
         }
 
-        // Colisión de proyectil del jugador con enemigos
+        // Projectile player collision with enemies
         if (projectile.source === "player") {
           enemies.forEach(enemy => {
             if (!enemy.isAlive) return;
-            
+
             const enemyObj = scene.getObjectByName(`enemy-${enemy.id}`);
             if (!enemyObj) return;
 
@@ -82,7 +86,17 @@ export const CollisionManager = () => {
 
     frameId = requestAnimationFrame(checkCollisions);
     return () => cancelAnimationFrame(frameId);
-  }, [scene, projectiles, playerState, enemies, removeProjectile, removeEnemy, takeDamage, setGameOver, isGameOver]);
+  }, [
+    scene,
+    projectiles,
+    playerState,
+    enemies,
+    removeProjectile,
+    removeEnemy,
+    takeDamage,
+    setGameOver,
+    isGameOver,
+  ]);
 
   return null;
 };

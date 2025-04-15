@@ -2,10 +2,10 @@ import { Mesh, Vector3 } from "three";
 import { useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 
+import { DashParticles } from "./DashParticles";
 import { useGameStore } from "../stores/gameStore";
 import { usePlayerStore } from "../stores/playerStore";
 import { usePlayerControls } from "../hooks/usePlayerControls";
-import { DashParticles } from "./DashParticles";
 
 export const Player = () => {
   const meshRef = useRef<Mesh>(null);
@@ -28,9 +28,9 @@ export const Player = () => {
   useFrame((_, delta) => {
     if (!meshRef.current || isGameOver) return;
 
-    // Si está dashing, no permitir movimiento normal
+    // If dashing, do not allow normal movement
     if (isDashing) {
-      // Actualizar posición del mesh directamente
+      // Update mesh position directly
       meshRef.current.position.copy(playerPosition);
       return;
     }
@@ -40,10 +40,10 @@ export const Player = () => {
       const distance = currentPos.distanceTo(controls.targetPosition);
 
       if (distance > 0.1) {
-        // Calcular dirección del movimiento
+        // Calculate movement direction
         const direction = new Vector3().subVectors(controls.targetPosition, currentPos).normalize();
 
-        // Aplicar movimiento suave
+        // Apply smooth movement
         currentPos.add(direction.multiplyScalar(controls.moveSpeed));
         updatePosition(currentPos);
       } else {
@@ -51,13 +51,13 @@ export const Player = () => {
       }
     }
 
-    // Animar el escudo si está activo
+    // Animate the shield if it is active
     if (shieldRef.current && isShielded) {
-      // Actualizar posición del escudo para que siga al jugador
+      // Update shield position to follow the player
       shieldRef.current.position.copy(meshRef.current.position);
-      
-      // Rotación y escala del escudo
-      shieldRef.current.rotation.y += delta * 2; // Rotación constante
+
+      // Shield rotation and scale
+      shieldRef.current.rotation.y += delta * 2; // Constant rotation
       shieldRef.current.scale.set(
         1 + Math.sin(Date.now() * 0.005) * 0.1, // Pulsación suave
         1 + Math.sin(Date.now() * 0.005) * 0.1,

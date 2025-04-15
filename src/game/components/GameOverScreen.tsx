@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import { Gamepad2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { useGameStore } from "../stores/gameStore";
-import { usePlayerStore } from "../stores/playerStore";
 import { useEnemyStore } from "../stores/enemyStore";
+import { usePlayerStore } from "../stores/playerStore";
 import { useAbilitiesStore } from "../stores/abilitiesStore";
 
 export const GameOverScreen = () => {
@@ -36,14 +36,14 @@ export const GameOverScreen = () => {
         <div className="flex flex-col gap-4 justify-center w-full">
           <button
             onClick={handleRestart}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg border-none cursor-pointer text-lg transition-colors hover:bg-blue-700 pointer-events-auto"
-        >
-          Volver a jugar
-        </button>
-        <button
-          onClick={handleHomeRedirect}
-          className="px-6 py-3 bg-white text-black rounded-lg border-none cursor-pointer text-lg transition-colors hover:bg-gray-200 pointer-events-auto"
-        >
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg border-none cursor-pointer text-lg transition-colors hover:bg-blue-700 pointer-events-auto"
+          >
+            Volver a jugar
+          </button>
+          <button
+            onClick={handleHomeRedirect}
+            className="px-6 py-3 bg-white text-black rounded-lg border-none cursor-pointer text-lg transition-colors hover:bg-gray-200 pointer-events-auto"
+          >
             Ir al inicio
           </button>
         </div>

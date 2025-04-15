@@ -9,7 +9,7 @@ export interface Projectile {
   position: Vector3;
   direction: Vector3;
   createdAt: number;
-  source: 'player' | 'enemy';
+  source: "player" | "enemy";
   speed: number;
 }
 

@@ -39,14 +39,15 @@ export const useGameStore = create<GameState>((set, get) => ({
   incrementScore: () => set(state => ({ score: state.score + 25 })),
   setGameOver: isOver => set({ isGameOver: isOver }),
   setPaused: isPaused => set({ isPaused }),
-  toggleEnemyProjectiles: () => set((state) => ({ 
-    enemyProjectilesEnabled: !state.enemyProjectilesEnabled 
-  })),
+  toggleEnemyProjectiles: () =>
+    set(state => ({
+      enemyProjectilesEnabled: !state.enemyProjectilesEnabled,
+    })),
   startCountdown: () => set({ countdown: 3 }),
   updateCountdown: () => {
     const { countdown } = get();
     if (countdown === null) return;
-    
+
     if (countdown <= 1) {
       set({ countdown: null });
     } else {

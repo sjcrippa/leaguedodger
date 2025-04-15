@@ -23,35 +23,35 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     moveSpeed: 0.12,
   });
 
-  // Detener movimiento cuando se pausa, hay countdown o está dashing
+  // Stop movement when paused, there is a countdown or is dashing
   useEffect(() => {
     if (isPaused || countdown !== null || isDashing) {
       controls.current.isMoving = false;
     }
   }, [isPaused, countdown, isDashing]);
 
-  // Procesar el movimiento del jugador hacia un punto
+  // Process the player movement to a point
   const processMovement = useCallback(
     (x: number, y: number) => {
       if (!ref.current || isPaused || isGameOver || countdown !== null || isDashing) return;
 
-      // Convertir coordenadas del mouse a coordenadas normalizadas (-1 a 1)
+      // Convert mouse coordinates to normalized coordinates (-1 to 1)
       const mouse = new Vector2((x / window.innerWidth) * 2 - 1, -(y / window.innerHeight) * 2 + 1);
 
-      // Actualizar el rayo para intersección
+      // Update the ray for intersection
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(scene.children, true);
       const floorIntersect = intersects.find(i => i.object.name === "game-floor");
 
       if (floorIntersect) {
         const point = floorIntersect.point;
-        point.y = ref.current.position.y; // Mantener altura actual
+        point.y = ref.current.position.y; // Keep current height
 
-        // Actualizar destino y estado de movimiento
+        // Update destination and movement state
         controls.current.targetPosition.copy(point);
         controls.current.isMoving = true;
 
-        // Rotar el jugador hacia el punto de destino
+        // Rotate the player towards the destination point
         const direction = new Vector3().subVectors(point, ref.current.position).normalize();
 
         const angle = Math.atan2(direction.x, direction.z);
@@ -61,11 +61,11 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     [ref, camera, raycaster, scene, isPaused, isGameOver, countdown, isDashing]
   );
 
-  // Manejar click derecho
+  // Handle right click
   const handleMouseDown = useCallback(
     (event: MouseEvent) => {
       if (event.button === 2) {
-        // Solo click derecho
+        // Only right click
         event.preventDefault();
         processMovement(event.clientX, event.clientY);
       }
@@ -73,7 +73,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     [processMovement]
   );
 
-  // Actualizar posición en cada frame
+  // Update position on each frame
   useEffect(() => {
     let animationFrameId: number;
 
@@ -107,7 +107,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     };
   }, [ref, isPaused, isGameOver, countdown, isDashing]);
 
-  // Configurar event listeners
+  // Configure event listeners
   useEffect(() => {
     const canvas = document.querySelector("canvas");
     if (canvas) {

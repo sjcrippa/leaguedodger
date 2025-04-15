@@ -12,20 +12,20 @@ const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
   dashDuration: 0.3,
   flashDistance: 5,
   flashCooldown: 5,
-  shieldDuration: 2, // 3 seconds shield duration
+  shieldDuration: 2,
   shieldCooldown: 6,
-  invulnerabilityDuration: 1, // 1 second of invulnerability after taking damage
+  invulnerabilityDuration: 1,
   maxHealth: 100,
   currentHealth: 100,
   dashParticles: {
-    count: 100, // Más partículas
+    count: 100,
     positions: [] as Vector3[],
     velocities: [] as Vector3[],
     lifetimes: [] as number[],
-    maxLifetime: 1.0, // Mayor tiempo de vida
-    spawnRate: 0.005, // Generación más frecuente
-    spread: 1.0, // Mayor dispersión
-    speed: 4, // Mayor velocidad
+    maxLifetime: 1.0,
+    spawnRate: 0.005,
+    spread: 1.0,
+    speed: 4,
   },
 };
 
@@ -122,7 +122,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
           state: {
             ...state.state,
             isDashing: false,
-            dashParticles: null
+            dashParticles: null,
           },
           status: {
             ...state.status,
@@ -132,7 +132,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         };
       }
 
-      // Si está activando el dash, inicializar las partículas
+      // If dash is active, initialize the particles
       const baseConfig = state.config.dashParticles;
       const dashParticles: DashParticles = {
         count: baseConfig.count,
@@ -145,20 +145,22 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         lifetimes: [],
       };
 
-      // Generar partículas iniciales
+      // Generate initial particles
       for (let i = 0; i < dashParticles.count; i++) {
         const angle = Math.random() * Math.PI * 2;
         const radius = Math.random() * dashParticles.spread;
         const x = Math.cos(angle) * radius;
-        const y = Math.random() * dashParticles.spread - dashParticles.spread/2;
+        const y = Math.random() * dashParticles.spread - dashParticles.spread / 2;
         const z = Math.sin(angle) * radius;
-        
+
         dashParticles.positions.push(new Vector3(x, y, z));
-        dashParticles.velocities.push(new Vector3(
-          (Math.random() - 0.5) * dashParticles.speed,
-          (Math.random() - 0.5) * dashParticles.speed,
-          (Math.random() - 0.5) * dashParticles.speed
-        ));
+        dashParticles.velocities.push(
+          new Vector3(
+            (Math.random() - 0.5) * dashParticles.speed,
+            (Math.random() - 0.5) * dashParticles.speed,
+            (Math.random() - 0.5) * dashParticles.speed
+          )
+        );
         dashParticles.lifetimes.push(dashParticles.maxLifetime);
       }
 
@@ -166,7 +168,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         state: {
           ...state.state,
           isDashing: true,
-          dashParticles
+          dashParticles,
         },
         status: {
           ...state.status,
@@ -203,7 +205,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         },
       };
 
-      // Si se activa el escudo, programar su desactivación
+      // If the shield is activated, program its deactivation
       if (isShielded) {
         setTimeout(() => {
           set(state => ({
@@ -268,28 +270,28 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     const newVelocities: Vector3[] = [];
     const newLifetimes: number[] = [];
 
-    // Actualizar partículas existentes
+    // Update existing particles
     for (let i = 0; i < currentParticles.positions.length; i++) {
       const lifetime = currentParticles.lifetimes[i] - delta;
       if (lifetime > 0) {
         newPositions.push(
-          currentParticles.positions[i].clone().add(
-            currentParticles.velocities[i].clone().multiplyScalar(delta)
-          )
+          currentParticles.positions[i]
+            .clone()
+            .add(currentParticles.velocities[i].clone().multiplyScalar(delta))
         );
         newVelocities.push(currentParticles.velocities[i]);
         newLifetimes.push(lifetime);
       }
     }
 
-    // Generar nuevas partículas
+    // Generate new particles
     const newParticlesCount = Math.floor(delta / currentParticles.spawnRate);
     for (let i = 0; i < newParticlesCount; i++) {
       const angle = Math.random() * Math.PI * 2;
       const radius = Math.random() * currentParticles.spread;
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
-      
+
       const position = new Vector3(x, 0, z);
       const velocity = new Vector3(
         (Math.random() - 0.5) * currentParticles.speed,
@@ -310,8 +312,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
           positions: newPositions,
           velocities: newVelocities,
           lifetimes: newLifetimes,
-        }
-      }
+        },
+      },
     }));
   },
 }));
