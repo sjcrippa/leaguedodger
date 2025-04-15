@@ -3,6 +3,7 @@ import { PauseIcon, PlayIcon, CheckCircleIcon } from "lucide-react";
 
 import { useGameStore } from "../stores/gameStore";
 import { useLevelStore } from "../stores/levelStore";
+import AbilityBar from "./AbilityBar";
 
 export const GameHUD = () => {
   const { score, countdown } = useGameStore();
@@ -51,6 +52,9 @@ export const GameHUD = () => {
           </div>
         </div>
       </div>
+
+      {/* Ability Bar */}
+      <AbilityBar />
 
       {/* Countdown display */}
       {countdown !== null && (
