@@ -11,7 +11,7 @@ import { CollisionManager } from "../core/CollisionManager";
 import { AbilitiesManager } from "../core/AbilitiesManager";
 import { usePlayerStore } from "../stores/playerStore";
 import { useAbilitiesStore } from "../stores/abilitiesStore";
-import { DEFAULT_GAME_CONFIG } from "./gameConfig";
+import { DEFAULT_GAME_CONFIG } from "../constants/gameConfig";
 
 export const GameScene = () => {
   const projectiles = useAbilitiesStore(state => state.projectiles);

@@ -1,10 +1,12 @@
-import { create } from "zustand";
 import { Vector3 } from "three";
-import { EnemyState } from "../types/enemy";
-import { DEFAULT_GAME_CONFIG } from "../constants/gameConfig";
-import { useAbilitiesStore } from "./abilitiesStore";
+import { create } from "zustand";
+
 import { useGameStore } from "./gameStore";
 import { useLevelStore } from "./levelStore";
+import { useAbilitiesStore } from "./abilitiesStore";
+import { DEFAULT_GAME_CONFIG } from "../constants/gameConfig";
+
+import type { EnemyState } from "../types/enemy";
 
 interface EnemyStore {
   enemies: EnemyState[];
@@ -37,13 +39,13 @@ interface EnemyStore {
 
 const DEFAULT_ENEMY_CONFIG = {
   maxEnemies: 5,
-  spawnInterval: 2000, // 2 seconds between spawns
-  spawnMargin: 5, // Margin from map edges
-  attackRange: 20, // Attack range
-  attackCooldown: 2, // 2 seconds between attacks
-  projectileSpeed: 0.7, // Projectile speed
-  moveSpeed: 0.08, // Movement speed
-  minEnemyDistance: 8, // Significantly increased
+  spawnInterval: 2000,
+  spawnMargin: 5,
+  attackRange: 20,
+  attackCooldown: 2,
+  projectileSpeed: 0.7,
+  moveSpeed: 0.08,
+  minEnemyDistance: 8,
   enemyHealth: 100,
   enemyDamage: 10,
 };

@@ -4,7 +4,7 @@ import { Canvas } from "@react-three/fiber";
 
 import { GameHUD } from "@/game/components/GameHUD";
 import { useGameStore } from "@/game/stores/gameStore";
-import { GameScene } from "@/game/constants/GameScene";
+import { GameScene } from "@/game/components/GameScene";
 import { GameOverScreen } from "@/game/components/GameOverScreen";
 
 export const GamePage = () => {

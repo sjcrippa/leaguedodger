@@ -5,6 +5,15 @@ import { usePlayerStore } from "./playerStore";
 import { ABILITIES_CONFIG } from "../constants/abilities";
 import { Projectile, AbilityKey } from "../types/abilities";
 
+const INITIAL_COOLDOWNS = {
+  q: 0,
+  w: 0,
+  e: 0,
+  r: 0,
+  d: 0,
+  f: 0,
+};
+
 interface AbilitiesState {
   projectiles: Projectile[];
   cooldowns: { [key: string]: number };
@@ -23,14 +32,7 @@ interface AbilitiesState {
 
 export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   projectiles: [],
-  cooldowns: {
-    q: 0,
-    w: 0,
-    e: 0,
-    r: 0,
-    d: 0,
-    f: 0,
-  },
+  cooldowns: INITIAL_COOLDOWNS,
 
   addProjectile: (position, direction, source, speed = 0.8) => {
     const id = Math.random().toString(36).substring(7);
@@ -54,14 +56,7 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   reset: () => {
     set({
       projectiles: [],
-      cooldowns: {
-        q: 0,
-        w: 0,
-        e: 0,
-        r: 0,
-        d: 0,
-        f: 0,
-      },
+      cooldowns: INITIAL_COOLDOWNS,
     });
   },
 
