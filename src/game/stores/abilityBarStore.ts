@@ -25,12 +25,12 @@ const initialAbilities: Ability[] = Object.entries(ABILITIES_CONFIG).map(([key, 
   isOnCooldown: false,
 }));
 
-export const useAbilityBarStore = create<AbilityBarState>((set) => ({
+export const useAbilityBarStore = create<AbilityBarState>(set => ({
   abilities: initialAbilities,
-  
+
   triggerAbility: (key: string) => {
-    set((state) => ({
-      abilities: state.abilities.map((ability) =>
+    set(state => ({
+      abilities: state.abilities.map(ability =>
         ability.key === key && !ability.isOnCooldown
           ? { ...ability, isOnCooldown: true, currentCooldown: ability.cooldown }
           : ability
@@ -39,8 +39,8 @@ export const useAbilityBarStore = create<AbilityBarState>((set) => ({
   },
 
   updateCooldowns: (delta: number) => {
-    set((state) => ({
-      abilities: state.abilities.map((ability) =>
+    set(state => ({
+      abilities: state.abilities.map(ability =>
         ability.isOnCooldown
           ? {
               ...ability,
@@ -55,4 +55,4 @@ export const useAbilityBarStore = create<AbilityBarState>((set) => ({
   resetAbilities: () => {
     set({ abilities: initialAbilities });
   },
-})); 
+}));

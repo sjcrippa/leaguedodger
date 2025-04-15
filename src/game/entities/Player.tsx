@@ -1,8 +1,9 @@
 import { Mesh, Vector3 } from "three";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 
-import { DashParticles } from "./DashParticles";
+import { FlashParticles } from "./FlashParticles";
+import { DashTrail } from "./DashTrail";
 import { useGameStore } from "../stores/gameStore";
 import { usePlayerStore } from "../stores/playerStore";
 import { usePlayerControls } from "../hooks/usePlayerControls";
@@ -17,6 +18,7 @@ export const Player = () => {
   const isShielded = usePlayerStore(state => state.state.isShielded);
   const isDashing = usePlayerStore(state => state.state.isDashing);
   const isFlashing = usePlayerStore(state => state.state.isFlashing);
+  const [flashStartPosition, setFlashStartPosition] = useState<Vector3 | null>(null);
 
   // Set initial position when component mounts and sync with store position changes
   useEffect(() => {
@@ -29,13 +31,21 @@ export const Player = () => {
   useFrame((_, delta) => {
     if (!meshRef.current || isGameOver) return;
 
-    // If dashing or flashing, do not allow normal movement
-    if (isDashing || isFlashing) {
+    // If flashing, store the start position
+    if (isFlashing && !flashStartPosition) {
+      setFlashStartPosition(meshRef.current.position.clone());
+    } else if (!isFlashing && flashStartPosition) {
+      setFlashStartPosition(null);
+    }
+
+    // If dashing, do not allow normal movement
+    if (isDashing) {
       // Update mesh position directly
       meshRef.current.position.copy(playerPosition);
       return;
     }
 
+    // Normal movement (including during flash)
     if (controls.isMoving) {
       const currentPos = meshRef.current.position;
       const distance = currentPos.distanceTo(controls.targetPosition);
@@ -51,6 +61,9 @@ export const Player = () => {
         controls.isMoving = false;
       }
     }
+
+    // Always update mesh position to match store position
+    meshRef.current.position.copy(playerPosition);
 
     // Animate the shield if it is active
     if (shieldRef.current && isShielded) {
@@ -121,7 +134,8 @@ export const Player = () => {
         </mesh>
       )}
 
-      <DashParticles isActive={isDashing} position={playerPosition} />
+      <FlashParticles isActive={isFlashing} position={flashStartPosition || meshRef.current?.position || playerPosition} />
+      <DashTrail isActive={isDashing} position={playerPosition} />
     </group>
   );
 };

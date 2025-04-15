@@ -1,6 +1,6 @@
 import { Vector3 } from "three";
 
-export interface DashParticles {
+export interface FlashParticles {
   count: number;
   positions: Vector3[];
   velocities: Vector3[];
@@ -11,6 +11,11 @@ export interface DashParticles {
   speed: number;
 }
 
+export interface DashTrail {
+  positions: Vector3[];
+  maxLength: number;
+}
+
 export interface PlayerState {
   isAlive: boolean;
   isInvulnerable: boolean;
@@ -19,7 +24,8 @@ export interface PlayerState {
   isShielded: boolean;
   position: Vector3;
   velocity: Vector3;
-  dashParticles: DashParticles | null;
+  flashParticles: FlashParticles | null;
+  dashTrail: DashTrail | null;
 }
 
 export interface PlayerStatus {
@@ -39,5 +45,6 @@ export interface PlayerConfig {
   invulnerabilityDuration: number;
   maxHealth: number;
   currentHealth: number;
-  dashParticles: DashParticles;
+  flashParticles: FlashParticles;
+  dashTrail: DashTrail;
 }

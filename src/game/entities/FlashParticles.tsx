@@ -5,36 +5,36 @@ import { Points, BufferGeometry, Float32BufferAttribute, Vector3, Color } from "
 
 import { usePlayerStore } from "../stores/playerStore";
 
-interface DashParticlesProps {
+interface FlashParticlesProps {
   isActive: boolean;
   position: Vector3;
 }
 
-export const DashParticles = ({ isActive, position }: DashParticlesProps) => {
+export const FlashParticles = ({ isActive, position }: FlashParticlesProps) => {
   const particlesRef = useRef<Points>(null);
   const trailPositions = useRef<Vector3[]>([]);
-  const updateDashParticles = usePlayerStore(state => state.updateDashParticles);
-  const dashParticles = usePlayerStore(state => state.state.dashParticles);
+  const updateFlashParticles = usePlayerStore(state => state.updateFlashParticles);
+  const flashParticles = usePlayerStore(state => state.state.flashParticles);
 
   // Actualizar geometría de partículas y estela
   useEffect(() => {
-    if (!particlesRef.current || !dashParticles?.positions?.length) return;
+    if (!particlesRef.current || !flashParticles?.positions?.length) return;
 
     // Actualizar partículas
     const geometry = new BufferGeometry();
-    const positions = new Float32Array(dashParticles.positions.length * 3);
-    const colors = new Float32Array(dashParticles.positions.length * 3);
+    const positions = new Float32Array(flashParticles.positions.length * 3);
+    const colors = new Float32Array(flashParticles.positions.length * 3);
 
-    dashParticles.positions.forEach((particle: Vector3, i: number) => {
+    flashParticles.positions.forEach((particle: Vector3, i: number) => {
       // Posicionar las partículas relativas al jugador
       const pos = particle.clone().add(position);
       positions[i * 3] = pos.x;
       positions[i * 3 + 1] = pos.y;
       positions[i * 3 + 2] = pos.z;
 
-      // Gradiente de color desde dorado a naranja
-      const progress = dashParticles.lifetimes[i] / dashParticles.maxLifetime;
-      const color = new Color().setHSL(0.1, 1, 0.5 + progress * 0.3); // Dorado más brillante
+      // Gradiente de color desde azul a blanco
+      const progress = flashParticles.lifetimes[i] / flashParticles.maxLifetime;
+      const color = new Color().setHSL(0.6, 1, 0.5 + progress * 0.3); // Azul más brillante
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
@@ -52,22 +52,22 @@ export const DashParticles = ({ isActive, position }: DashParticlesProps) => {
       }
     }
   }, [
-    dashParticles?.positions,
+    flashParticles?.positions,
     position,
     isActive,
-    dashParticles?.maxLifetime,
-    dashParticles?.lifetimes,
+    flashParticles?.maxLifetime,
+    flashParticles?.lifetimes,
   ]);
 
   useFrame((_, delta) => {
     if (isActive) {
-      updateDashParticles(delta);
+      updateFlashParticles(delta);
     } else {
       trailPositions.current = [];
     }
   });
 
-  if (!isActive || !dashParticles) return null;
+  if (!isActive || !flashParticles) return null;
 
   return (
     <group>
@@ -84,7 +84,7 @@ export const DashParticles = ({ isActive, position }: DashParticlesProps) => {
       {trailPositions.current.length > 1 && (
         <Line
           points={trailPositions.current.map(p => [p.x, p.y, p.z])}
-          color="#ffd700"
+          color="#00ffff"
           lineWidth={3}
           transparent
           opacity={0.6}

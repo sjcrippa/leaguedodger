@@ -1,7 +1,7 @@
 import { Vector3 } from "three";
 import { create } from "zustand";
 
-import { PlayerState, PlayerStatus, PlayerConfig, DashParticles } from "../types/player";
+import { PlayerState, PlayerStatus, PlayerConfig, FlashParticles, DashTrail } from "../types/player";
 
 // Store the initial position
 const INITIAL_POSITION = new Vector3(0, 2.5, 0);
@@ -17,7 +17,7 @@ const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
   invulnerabilityDuration: 1,
   maxHealth: 100,
   currentHealth: 100,
-  dashParticles: {
+  flashParticles: {
     count: 30,
     positions: [] as Vector3[],
     velocities: [] as Vector3[],
@@ -26,6 +26,10 @@ const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
     spawnRate: 0.01,
     spread: 0.8,
     speed: 3,
+  },
+  dashTrail: {
+    positions: [] as Vector3[],
+    maxLength: 15,
   },
 };
 
@@ -45,7 +49,8 @@ interface PlayerStore {
   updatePosition: (position: Vector3) => void;
   updateVelocity: (velocity: Vector3) => void;
   reset: () => void;
-  updateDashParticles: (delta: number) => void;
+  updateFlashParticles: (delta: number) => void;
+  updateDashTrail: (position: Vector3) => void;
 }
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
@@ -57,7 +62,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     isShielded: false,
     position: INITIAL_POSITION.clone(),
     velocity: new Vector3(),
-    dashParticles: null,
+    flashParticles: null,
+    dashTrail: null,
   },
   status: {
     isMoving: false,
@@ -126,7 +132,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
           state: {
             ...state.state,
             isDashing: false,
-            dashParticles: null,
+            dashTrail: null,
           },
           status: {
             ...state.status,
@@ -136,9 +142,46 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         };
       }
 
-      // If dash is active, initialize the particles
-      const baseConfig = state.config.dashParticles;
-      const dashParticles: DashParticles = {
+      // Initialize dash trail
+      const dashTrail: DashTrail = {
+        positions: [state.state.position.clone()],
+        maxLength: state.config.dashTrail.maxLength,
+      };
+
+      return {
+        state: {
+          ...state.state,
+          isDashing: true,
+          dashTrail,
+        },
+        status: {
+          ...state.status,
+          isUsingAbility: true,
+          currentAbility: "e",
+        },
+      };
+    }),
+
+  setFlashing: isFlashing =>
+    set(state => {
+      if (!isFlashing) {
+        return {
+          state: {
+            ...state.state,
+            isFlashing: false,
+            flashParticles: null,
+          },
+          status: {
+            ...state.status,
+            isUsingAbility: false,
+            currentAbility: null,
+          },
+        };
+      }
+
+      // If flash is active, initialize the particles
+      const baseConfig = state.config.flashParticles;
+      const flashParticles: FlashParticles = {
         count: baseConfig.count,
         maxLifetime: baseConfig.maxLifetime,
         spawnRate: baseConfig.spawnRate,
@@ -150,50 +193,37 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       };
 
       // Generate initial particles
-      for (let i = 0; i < dashParticles.count; i++) {
+      for (let i = 0; i < flashParticles.count; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * dashParticles.spread;
+        const radius = Math.random() * flashParticles.spread;
         const x = Math.cos(angle) * radius;
-        const y = Math.random() * dashParticles.spread - dashParticles.spread / 2;
+        const y = Math.random() * flashParticles.spread - flashParticles.spread / 2;
         const z = Math.sin(angle) * radius;
 
-        dashParticles.positions.push(new Vector3(x, y, z));
-        dashParticles.velocities.push(
+        flashParticles.positions.push(new Vector3(x, y, z));
+        flashParticles.velocities.push(
           new Vector3(
-            (Math.random() - 0.5) * dashParticles.speed,
-            (Math.random() - 0.5) * dashParticles.speed,
-            (Math.random() - 0.5) * dashParticles.speed
+            (Math.random() - 0.5) * flashParticles.speed,
+            (Math.random() - 0.5) * flashParticles.speed,
+            (Math.random() - 0.5) * flashParticles.speed
           )
         );
-        dashParticles.lifetimes.push(dashParticles.maxLifetime);
+        flashParticles.lifetimes.push(flashParticles.maxLifetime);
       }
 
       return {
         state: {
           ...state.state,
-          isDashing: true,
-          dashParticles,
+          isFlashing: true,
+          flashParticles,
         },
         status: {
           ...state.status,
           isUsingAbility: true,
-          currentAbility: "e",
+          currentAbility: "r",
         },
       };
     }),
-
-  setFlashing: isFlashing =>
-    set(state => ({
-      state: {
-        ...state.state,
-        isFlashing,
-      },
-      status: {
-        ...state.status,
-        isUsingAbility: isFlashing,
-        currentAbility: isFlashing ? "r" : null,
-      },
-    })),
 
   setShielded: isShielded =>
     set(state => {
@@ -255,7 +285,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         isShielded: false,
         position: INITIAL_POSITION.clone(),
         velocity: new Vector3(),
-        dashParticles: null,
+        flashParticles: null,
+        dashTrail: null,
       },
       status: {
         isMoving: false,
@@ -265,11 +296,11 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       config: DEFAULT_PLAYER_CONFIG,
     }),
 
-  updateDashParticles: (delta: number) => {
+  updateFlashParticles: (delta: number) => {
     const state = get().state;
-    if (!state.dashParticles) return;
+    if (!state.flashParticles) return;
 
-    const currentParticles = state.dashParticles;
+    const currentParticles = state.flashParticles;
     const newPositions: Vector3[] = [];
     const newVelocities: Vector3[] = [];
     const newLifetimes: number[] = [];
@@ -278,7 +309,6 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     for (let i = 0; i < currentParticles.positions.length; i++) {
       const lifetime = currentParticles.lifetimes[i] - delta;
       if (lifetime > 0) {
-        // Reutilizar vectores temporales
         tempVector.copy(currentParticles.velocities[i]).multiplyScalar(delta);
         newPositions.push(currentParticles.positions[i].clone().add(tempVector));
         newVelocities.push(currentParticles.velocities[i]);
@@ -292,14 +322,12 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       const angle = Math.random() * Math.PI * 2;
       const radius = Math.random() * currentParticles.spread;
 
-      // Reutilizar vector temporal para la posición
       tempVector.set(
         Math.cos(angle) * radius,
         (Math.random() - 0.5) * currentParticles.spread,
         Math.sin(angle) * radius
       );
 
-      // Reutilizar vector temporal para la velocidad
       tempDirection.set(
         (Math.random() - 0.5) * currentParticles.speed,
         (Math.random() - 0.5) * currentParticles.speed,
@@ -314,7 +342,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set(state => ({
       state: {
         ...state.state,
-        dashParticles: {
+        flashParticles: {
           ...currentParticles,
           positions: newPositions,
           velocities: newVelocities,
@@ -322,5 +350,26 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         },
       },
     }));
+  },
+
+  updateDashTrail: (position: Vector3) => {
+    set(state => {
+      if (!state.state.dashTrail) return state;
+
+      const newPositions = [...state.state.dashTrail.positions, position.clone()];
+      if (newPositions.length > state.state.dashTrail.maxLength) {
+        newPositions.shift();
+      }
+
+      return {
+        state: {
+          ...state.state,
+          dashTrail: {
+            ...state.state.dashTrail,
+            positions: newPositions,
+          },
+        },
+      };
+    });
   },
 }));

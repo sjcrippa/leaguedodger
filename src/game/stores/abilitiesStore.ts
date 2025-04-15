@@ -144,23 +144,26 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
         const playerPosition = playerStore.state.position;
 
         // Usar la dirección proporcionada por castAbility
-        const targetPosition = playerPosition.clone().add(direction.multiplyScalar(12)); // 12 unidades de distancia
+        const targetPosition = playerPosition.clone().add(direction.multiplyScalar(12));
 
-        // Aplicar flash (teletransportación instantánea)
+        // Primero activamos el estado de flash
         playerStore.setFlashing(true);
-        
-        // Actualizar la posición del jugador
-        playerStore.updatePosition(targetPosition);
-        
-        // Forzar una actualización inmediata del mesh
-        if (player) {
-          player.position.copy(targetPosition);
-        }
 
-        // Desactivar el estado de flash después de un breve momento
+        // Pequeño delay para asegurar que las partículas se muestren
         setTimeout(() => {
-          playerStore.setFlashing(false);
-        }, 100); // 100ms para efectos visuales
+          // Luego actualizamos la posición
+          playerStore.updatePosition(targetPosition);
+          
+          // Forzar una actualización inmediata del mesh
+          if (player) {
+            player.position.copy(targetPosition);
+          }
+
+          // Finalmente desactivamos el estado después de la animación
+          setTimeout(() => {
+            playerStore.setFlashing(false);
+          }, 500);
+        }, 50); // Pequeño delay para asegurar que las partículas se muestren
 
         break;
       }
