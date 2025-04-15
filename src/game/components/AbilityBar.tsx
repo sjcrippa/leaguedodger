@@ -41,7 +41,7 @@ const AbilityBar = () => {
       if (isPaused || isGameOver || countdown !== null) return;
 
       const key = e.key.toUpperCase();
-      if (["Q", "W", "E"].includes(key)) {
+      if (["Q", "W", "E", "R"].includes(key)) {
         triggerAbility(key);
       }
     };
@@ -53,7 +53,7 @@ const AbilityBar = () => {
   return (
     <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4">
       {abilities.map(ability => {
-        const isDisabled = ability.key === "R" || countdown !== null;
+        const isDisabled = countdown !== null;
 
         return (
           <div
@@ -81,7 +81,7 @@ const AbilityBar = () => {
             </span>
 
             {/* Cooldown overlay */}
-            {ability.isOnCooldown && countdown === null && ability.key !== "R" && (
+            {ability.isOnCooldown && countdown === null && (
               <>
                 {/* Cooldown number */}
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -119,7 +119,7 @@ const AbilityBar = () => {
 
             {/* Tooltip */}
             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/90 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap">
-              {ability.key === "R" ? "No disponible" : ability.name}
+              {ability.name}
             </div>
           </div>
         );

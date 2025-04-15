@@ -16,6 +16,7 @@ export const Player = () => {
   const playerPosition = usePlayerStore(state => state.state.position);
   const isShielded = usePlayerStore(state => state.state.isShielded);
   const isDashing = usePlayerStore(state => state.state.isDashing);
+  const isFlashing = usePlayerStore(state => state.state.isFlashing);
 
   // Set initial position when component mounts and sync with store position changes
   useEffect(() => {
@@ -28,8 +29,8 @@ export const Player = () => {
   useFrame((_, delta) => {
     if (!meshRef.current || isGameOver) return;
 
-    // If dashing, do not allow normal movement
-    if (isDashing) {
+    // If dashing or flashing, do not allow normal movement
+    if (isDashing || isFlashing) {
       // Update mesh position directly
       meshRef.current.position.copy(playerPosition);
       return;
@@ -71,19 +72,37 @@ export const Player = () => {
       <mesh ref={meshRef} castShadow name="player">
         {/* Main body */}
         <boxGeometry args={[1.5, 4, 1.5]} />
-        <meshStandardMaterial color="blue" />
+        <meshStandardMaterial 
+          color="blue" 
+          transparent={isFlashing}
+          opacity={isFlashing ? 0.5 : 1}
+          emissive={isFlashing ? "#00ffff" : "#000000"}
+          emissiveIntensity={isFlashing ? 1 : 0}
+        />
 
         {/* Eyes (optional decorative elements) */}
         <group position={[0, 1.5, 0.9]}>
           {/* Right eye */}
           <mesh position={[0.2, 0, 0]}>
             <boxGeometry args={[0.2, 0.2, 0.1]} />
-            <meshStandardMaterial color="white" />
+            <meshStandardMaterial 
+              color="white" 
+              transparent={isFlashing}
+              opacity={isFlashing ? 0.5 : 1}
+              emissive={isFlashing ? "#00ffff" : "#000000"}
+              emissiveIntensity={isFlashing ? 1 : 0}
+            />
           </mesh>
           {/* Left eye */}
           <mesh position={[-0.2, 0, 0]}>
             <boxGeometry args={[0.2, 0.2, 0.1]} />
-            <meshStandardMaterial color="white" />
+            <meshStandardMaterial 
+              color="white" 
+              transparent={isFlashing}
+              opacity={isFlashing ? 0.5 : 1}
+              emissive={isFlashing ? "#00ffff" : "#000000"}
+              emissiveIntensity={isFlashing ? 1 : 0}
+            />
           </mesh>
         </group>
       </mesh>

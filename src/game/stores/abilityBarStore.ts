@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { ABILITIES_CONFIG } from "../constants/abilities";
 
 interface Ability {
   key: string;
@@ -15,12 +16,14 @@ interface AbilityBarState {
   resetAbilities: () => void;
 }
 
-const initialAbilities: Ability[] = [
-  { key: 'Q', name: 'Projectile Shot', cooldown: 0.2, currentCooldown: 0, isOnCooldown: false },
-  { key: 'W', name: 'Shield', cooldown: 8, currentCooldown: 0, isOnCooldown: false },
-  { key: 'E', name: 'Dash', cooldown: 5, currentCooldown: 0, isOnCooldown: false },
-  { key: 'R', name: 'Flash', cooldown: 5, currentCooldown: 0, isOnCooldown: false },
-];
+// consume initial abilities from the config
+const initialAbilities: Ability[] = Object.entries(ABILITIES_CONFIG).map(([key, config]) => ({
+  key: key.toUpperCase(),
+  name: config.name,
+  cooldown: config.cooldown,
+  currentCooldown: 0,
+  isOnCooldown: false,
+}));
 
 export const useAbilityBarStore = create<AbilityBarState>((set) => ({
   abilities: initialAbilities,

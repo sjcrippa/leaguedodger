@@ -3,6 +3,7 @@ import { useGameStore } from "../stores/gameStore";
 import { Vector3, Vector2, Mesh } from "three";
 import { useThree } from "@react-three/fiber";
 import { usePlayerStore } from "../stores/playerStore";
+import { useAbilitiesStore } from "../stores/abilitiesStore";
 
 interface PlayerControls {
   isMoving: boolean;
@@ -15,7 +16,9 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
   const isGameOver = useGameStore(state => state.isGameOver);
   const countdown = useGameStore(state => state.countdown);
   const isDashing = usePlayerStore(state => state.state.isDashing);
+  const isFlashing = usePlayerStore(state => state.state.isFlashing);
   const { camera, raycaster, scene } = useThree();
+  const castAbility = useAbilitiesStore(state => state.castAbility);
 
   const controls = useRef<PlayerControls>({
     isMoving: false,
@@ -23,17 +26,17 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     moveSpeed: 0.12,
   });
 
-  // Stop movement when paused, there is a countdown or is dashing
+  // Stop movement when paused, there is a countdown or is dashing/flashing
   useEffect(() => {
-    if (isPaused || countdown !== null || isDashing) {
+    if (isPaused || countdown !== null || isDashing || isFlashing) {
       controls.current.isMoving = false;
     }
-  }, [isPaused, countdown, isDashing]);
+  }, [isPaused, countdown, isDashing, isFlashing]);
 
   // Process the player movement to a point
   const processMovement = useCallback(
     (x: number, y: number) => {
-      if (!ref.current || isPaused || isGameOver || countdown !== null || isDashing) return;
+      if (!ref.current || isPaused || isGameOver || countdown !== null || isDashing || isFlashing) return;
 
       // Convert mouse coordinates to normalized coordinates (-1 to 1)
       const mouse = new Vector2((x / window.innerWidth) * 2 - 1, -(y / window.innerHeight) * 2 + 1);
@@ -58,7 +61,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
         ref.current.rotation.y = angle;
       }
     },
-    [ref, camera, raycaster, scene, isPaused, isGameOver, countdown, isDashing]
+    [ref, camera, raycaster, scene, isPaused, isGameOver, countdown, isDashing, isFlashing]
   );
 
   // Handle right click
@@ -73,12 +76,25 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     [processMovement]
   );
 
+  // Handle keyboard input for abilities
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (isPaused || isGameOver || countdown !== null) return;
+
+      const key = event.key.toUpperCase();
+      if (key === "R" && ref.current) {
+        castAbility("r", ref.current);
+      }
+    },
+    [isPaused, isGameOver, countdown, castAbility, ref]
+  );
+
   // Update position on each frame
   useEffect(() => {
     let animationFrameId: number;
 
     const updatePosition = () => {
-      if (!ref.current || isPaused || isGameOver || countdown !== null || isDashing) {
+      if (!ref.current || isPaused || isGameOver || countdown !== null || isDashing || isFlashing) {
         if (animationFrameId) {
           cancelAnimationFrame(animationFrameId);
         }
@@ -105,7 +121,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
-  }, [ref, isPaused, isGameOver, countdown, isDashing]);
+  }, [ref, isPaused, isGameOver, countdown, isDashing, isFlashing]);
 
   // Configure event listeners
   useEffect(() => {
@@ -114,14 +130,16 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
       canvas.addEventListener("mousedown", handleMouseDown);
     }
     window.addEventListener("contextmenu", e => e.preventDefault());
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       if (canvas) {
         canvas.removeEventListener("mousedown", handleMouseDown);
       }
       window.removeEventListener("contextmenu", e => e.preventDefault());
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handleMouseDown]);
+  }, [handleMouseDown, handleKeyDown]);
 
   return controls.current;
 };

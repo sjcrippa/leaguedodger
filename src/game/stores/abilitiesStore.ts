@@ -25,7 +25,7 @@ interface AbilitiesState {
     speed?: number
   ) => void;
   removeProjectile: (id: string) => void;
-  useAbility: (abilityKey: string, position: Vector3, direction: Vector3) => boolean;
+  useAbility: (abilityKey: string, position: Vector3, direction: Vector3, player: THREE.Object3D) => boolean;
   castAbility: (abilityKey: AbilityKey, player: THREE.Object3D) => void;
   update: (delta: number) => void;
   reset: () => void;
@@ -64,7 +64,7 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
     });
   },
 
-  useAbility: (abilityKey, position, direction) => {
+  useAbility: (abilityKey, position, direction, player) => {
     // Avoid using abilities during countdown
     if (useGameStore.getState().countdown !== null) return false;
 
@@ -125,6 +125,9 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
           // Calcular posición intermedia
           const currentPosition = startPosition.clone().lerp(targetPosition, easeProgress);
           playerStore.updatePosition(currentPosition);
+          if (player) {
+            player.position.copy(currentPosition);
+          }
 
           if (progress < 1) {
             requestAnimationFrame(animateDash);
@@ -134,6 +137,31 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
         };
 
         requestAnimationFrame(animateDash);
+        break;
+      }
+      case "r": {
+        const playerStore = usePlayerStore.getState();
+        const playerPosition = playerStore.state.position;
+
+        // Usar la dirección proporcionada por castAbility
+        const targetPosition = playerPosition.clone().add(direction.multiplyScalar(12)); // 12 unidades de distancia
+
+        // Aplicar flash (teletransportación instantánea)
+        playerStore.setFlashing(true);
+        
+        // Actualizar la posición del jugador
+        playerStore.updatePosition(targetPosition);
+        
+        // Forzar una actualización inmediata del mesh
+        if (player) {
+          player.position.copy(targetPosition);
+        }
+
+        // Desactivar el estado de flash después de un breve momento
+        setTimeout(() => {
+          playerStore.setFlashing(false);
+        }, 100); // 100ms para efectos visuales
+
         break;
       }
       default:
@@ -154,7 +182,7 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
     const startPosition = player.position.clone().add(direction.clone().multiplyScalar(1.5));
 
     // Use ability with position and direction
-    get().useAbility(abilityKey, startPosition, direction);
+    get().useAbility(abilityKey, startPosition, direction, player);
   },
 
   update: delta => {
