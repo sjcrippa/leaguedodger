@@ -1,7 +1,9 @@
 import { useEffect } from "react";
-import { useAbilityBarStore } from "../stores/abilityBarStore";
+
 import { useGameStore } from "../stores/gameStore";
 import { useLevelStore } from "../stores/levelStore";
+import { useAbilityBarStore } from "../stores/abilityBarStore";
+import { useAnimationManager } from "../core/AnimationManager";
 
 const AbilityBar = () => {
   const abilities = useAbilityBarStore(state => state.abilities);
@@ -12,6 +14,7 @@ const AbilityBar = () => {
   const isGameOver = useGameStore(state => state.isGameOver);
   const countdown = useGameStore(state => state.countdown);
   const currentLevel = useLevelStore(state => state.currentLevel);
+  const animationManager = useAnimationManager();
 
   // Effect to reset cooldowns when level changes or countdown ends
   useEffect(() => {
@@ -25,23 +28,20 @@ const AbilityBar = () => {
   }, [countdown, resetAbilities]);
 
   useEffect(() => {
-    let frameId: number;
+    const id = "ability-bar-cooldowns";
+    animationManager.registerCallback(id, delta => {
+      updateCooldowns(delta);
+    });
 
-    const update = () => {
-      if (!isPaused && !isGameOver && countdown === null) {
-        updateCooldowns(1 / 60); // Asumiendo 60 FPS
-      }
-      frameId = requestAnimationFrame(update);
+    return () => {
+      animationManager.unregisterCallback(id);
     };
-
-    frameId = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(frameId);
-  }, [isPaused, isGameOver, countdown, updateCooldowns]);
+  }, [animationManager, updateCooldowns]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (isPaused || isGameOver || countdown !== null) return;
-      
+
       const key = e.key.toUpperCase();
       if (["Q", "W", "E"].includes(key)) {
         triggerAbility(key);
@@ -56,12 +56,18 @@ const AbilityBar = () => {
     <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4">
       {abilities.map(ability => {
         const isDisabled = ability.key === "R" || countdown !== null;
-        
+
         return (
           <div
             key={ability.key}
             className={`relative w-16 h-16 bg-black/50 backdrop-blur-sm rounded-lg flex items-center justify-center
-              ${isDisabled ? "opacity-50 cursor-not-allowed" : ability.isOnCooldown ? "opacity-80 cursor-not-allowed" : "hover:bg-black/60 cursor-pointer"}`}
+              ${
+                isDisabled
+                  ? "opacity-50 cursor-not-allowed"
+                  : ability.isOnCooldown
+                  ? "opacity-80 cursor-not-allowed"
+                  : "hover:bg-black/60 cursor-pointer"
+              }`}
             onClick={() => {
               if (!isDisabled && !ability.isOnCooldown) {
                 triggerAbility(ability.key);
@@ -104,7 +110,9 @@ const AbilityBar = () => {
                     fill="none"
                     stroke="rgba(255,255,255,0.3)"
                     strokeWidth="5"
-                    strokeDasharray={`${(1 - ability.currentCooldown / ability.cooldown) * 283} 283`}
+                    strokeDasharray={`${
+                      (1 - ability.currentCooldown / ability.cooldown) * 283
+                    } 283`}
                     className="transition-all duration-100 ease-linear"
                   />
                 </svg>

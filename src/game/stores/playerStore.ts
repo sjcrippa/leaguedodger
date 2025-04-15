@@ -18,16 +18,20 @@ const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
   maxHealth: 100,
   currentHealth: 100,
   dashParticles: {
-    count: 100,
+    count: 30,
     positions: [] as Vector3[],
     velocities: [] as Vector3[],
     lifetimes: [] as number[],
-    maxLifetime: 1.0,
-    spawnRate: 0.005,
-    spread: 1.0,
-    speed: 4,
+    maxLifetime: 0.5,
+    spawnRate: 0.01,
+    spread: 0.8,
+    speed: 3,
   },
 };
+
+// Reusable vectors for calculations
+const tempVector = new Vector3();
+const tempDirection = new Vector3();
 
 interface PlayerStore {
   state: PlayerState;
@@ -274,33 +278,36 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     for (let i = 0; i < currentParticles.positions.length; i++) {
       const lifetime = currentParticles.lifetimes[i] - delta;
       if (lifetime > 0) {
-        newPositions.push(
-          currentParticles.positions[i]
-            .clone()
-            .add(currentParticles.velocities[i].clone().multiplyScalar(delta))
-        );
+        // Reutilizar vectores temporales
+        tempVector.copy(currentParticles.velocities[i]).multiplyScalar(delta);
+        newPositions.push(currentParticles.positions[i].clone().add(tempVector));
         newVelocities.push(currentParticles.velocities[i]);
         newLifetimes.push(lifetime);
       }
     }
 
-    // Generate new particles
+    // Generate new particles more efficiently
     const newParticlesCount = Math.floor(delta / currentParticles.spawnRate);
     for (let i = 0; i < newParticlesCount; i++) {
       const angle = Math.random() * Math.PI * 2;
       const radius = Math.random() * currentParticles.spread;
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
 
-      const position = new Vector3(x, 0, z);
-      const velocity = new Vector3(
+      // Reutilizar vector temporal para la posición
+      tempVector.set(
+        Math.cos(angle) * radius,
+        (Math.random() - 0.5) * currentParticles.spread,
+        Math.sin(angle) * radius
+      );
+
+      // Reutilizar vector temporal para la velocidad
+      tempDirection.set(
         (Math.random() - 0.5) * currentParticles.speed,
         (Math.random() - 0.5) * currentParticles.speed,
         (Math.random() - 0.5) * currentParticles.speed
       );
 
-      newPositions.push(position);
-      newVelocities.push(velocity);
+      newPositions.push(tempVector.clone());
+      newVelocities.push(tempDirection.clone());
       newLifetimes.push(currentParticles.maxLifetime);
     }
 
