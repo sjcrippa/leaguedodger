@@ -12,6 +12,7 @@ interface PlayerControls {
 export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
   const isPaused = useGameStore(state => state.isPaused);
   const isGameOver = useGameStore(state => state.isGameOver);
+  const countdown = useGameStore(state => state.countdown);
   const { camera, raycaster, scene } = useThree();
 
   const controls = useRef<PlayerControls>({
@@ -20,17 +21,17 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     moveSpeed: 0.12,
   });
 
-  // Detener movimiento cuando se pausa
+  // Detener movimiento cuando se pausa o hay countdown
   useEffect(() => {
-    if (isPaused) {
+    if (isPaused || countdown !== null) {
       controls.current.isMoving = false;
     }
-  }, [isPaused]);
+  }, [isPaused, countdown]);
 
   // Procesar el movimiento del jugador hacia un punto
   const processMovement = useCallback(
     (x: number, y: number) => {
-      if (!ref.current || isPaused || isGameOver) return;
+      if (!ref.current || isPaused || isGameOver || countdown !== null) return;
 
       // Convertir coordenadas del mouse a coordenadas normalizadas (-1 a 1)
       const mouse = new Vector2((x / window.innerWidth) * 2 - 1, -(y / window.innerHeight) * 2 + 1);
@@ -55,7 +56,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
         ref.current.rotation.y = angle;
       }
     },
-    [ref, camera, raycaster, scene, isPaused, isGameOver]
+    [ref, camera, raycaster, scene, isPaused, isGameOver, countdown]
   );
 
   // Manejar click derecho
@@ -75,7 +76,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     let animationFrameId: number;
 
     const updatePosition = () => {
-      if (!ref.current || isPaused || isGameOver) {
+      if (!ref.current || isPaused || isGameOver || countdown !== null) {
         if (animationFrameId) {
           cancelAnimationFrame(animationFrameId);
         }
@@ -102,7 +103,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
-  }, [ref, isPaused, isGameOver]);
+  }, [ref, isPaused, isGameOver, countdown]);
 
   // Configurar event listeners
   useEffect(() => {

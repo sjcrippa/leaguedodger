@@ -17,6 +17,7 @@ export const GameScene = () => {
   const projectiles = useAbilitiesStore(state => state.projectiles);
   const removeProjectile = useAbilitiesStore(state => state.removeProjectile);
   const playerPosition = usePlayerStore(state => state.state.position);
+  const resetPlayer = usePlayerStore(state => state.reset);
   const isGameOver = useGameStore(state => state.isGameOver);
   const isPaused = useGameStore(state => state.isPaused);
   const countdown = useGameStore(state => state.countdown);
@@ -31,7 +32,8 @@ export const GameScene = () => {
   useEffect(() => {
     if (isGameOver) return;
     startCountdown();
-  }, [startCountdown, isGameOver]);
+    resetPlayer(); // Reset player position when countdown starts
+  }, [startCountdown, isGameOver, resetPlayer]);
 
   // Actualizar contador cada segundo
   useEffect(() => {
