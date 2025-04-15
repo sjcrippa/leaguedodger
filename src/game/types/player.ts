@@ -1,6 +1,17 @@
 import { Vector3 } from "three";
 
-export type PlayerState = {
+export interface DashParticles {
+  count: number;
+  positions: Vector3[];
+  velocities: Vector3[];
+  lifetimes: number[];
+  maxLifetime: number;
+  spawnRate: number;
+  spread: number;
+  speed: number;
+}
+
+export interface PlayerState {
   isAlive: boolean;
   isInvulnerable: boolean;
   isDashing: boolean;
@@ -8,15 +19,16 @@ export type PlayerState = {
   isShielded: boolean;
   position: Vector3;
   velocity: Vector3;
-};
+  dashParticles: DashParticles | null;
+}
 
-export type PlayerStatus = {
+export interface PlayerStatus {
   isMoving: boolean;
   isUsingAbility: boolean;
   currentAbility: string | null;
-};
+}
 
-export type PlayerConfig = {
+export interface PlayerConfig {
   baseSpeed: number;
   dashSpeed: number;
   dashDuration: number;
@@ -27,4 +39,5 @@ export type PlayerConfig = {
   invulnerabilityDuration: number;
   maxHealth: number;
   currentHealth: number;
-};
+  dashParticles: DashParticles;
+}

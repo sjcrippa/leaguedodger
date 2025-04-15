@@ -1,9 +1,9 @@
 import { Vector3 } from "three";
 import { create } from "zustand";
 
+import { usePlayerStore } from "./playerStore";
 import { ABILITIES_CONFIG } from "../constants/abilities";
 import { Projectile, AbilityKey } from "../types/abilities";
-import { usePlayerStore } from "./playerStore";
 
 interface AbilitiesState {
   projectiles: Projectile[];
@@ -98,6 +98,42 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
       case "w":
         usePlayerStore.getState().setShielded(true);
         break;
+      case "e": {
+        const playerStore = usePlayerStore.getState();
+        const playerPosition = playerStore.state.position;
+
+        // Usar la dirección proporcionada por castAbility
+        const targetPosition = playerPosition.clone().add(direction.multiplyScalar(10));
+
+        // Aplicar dash con animación
+        playerStore.setDashing(true);
+
+        // Animación de movimiento rápido
+        const startTime = Date.now();
+        const duration = 300; // 300ms para el dash
+        const startPosition = playerPosition.clone();
+
+        const animateDash = () => {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+
+          // Interpolación suave usando easeOutQuad
+          const easeProgress = 1 - Math.pow(1 - progress, 2);
+
+          // Calcular posición intermedia
+          const currentPosition = startPosition.clone().lerp(targetPosition, easeProgress);
+          playerStore.updatePosition(currentPosition);
+
+          if (progress < 1) {
+            requestAnimationFrame(animateDash);
+          } else {
+            playerStore.setDashing(false);
+          }
+        };
+
+        requestAnimationFrame(animateDash);
+        break;
+      }
       default:
         break;
     }

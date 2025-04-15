@@ -2,6 +2,7 @@ import { useEffect, useCallback, useRef } from "react";
 import { useGameStore } from "../stores/gameStore";
 import { Vector3, Vector2, Mesh } from "three";
 import { useThree } from "@react-three/fiber";
+import { usePlayerStore } from "../stores/playerStore";
 
 interface PlayerControls {
   isMoving: boolean;
@@ -13,6 +14,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
   const isPaused = useGameStore(state => state.isPaused);
   const isGameOver = useGameStore(state => state.isGameOver);
   const countdown = useGameStore(state => state.countdown);
+  const isDashing = usePlayerStore(state => state.state.isDashing);
   const { camera, raycaster, scene } = useThree();
 
   const controls = useRef<PlayerControls>({
@@ -21,17 +23,17 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     moveSpeed: 0.12,
   });
 
-  // Detener movimiento cuando se pausa o hay countdown
+  // Detener movimiento cuando se pausa, hay countdown o está dashing
   useEffect(() => {
-    if (isPaused || countdown !== null) {
+    if (isPaused || countdown !== null || isDashing) {
       controls.current.isMoving = false;
     }
-  }, [isPaused, countdown]);
+  }, [isPaused, countdown, isDashing]);
 
   // Procesar el movimiento del jugador hacia un punto
   const processMovement = useCallback(
     (x: number, y: number) => {
-      if (!ref.current || isPaused || isGameOver || countdown !== null) return;
+      if (!ref.current || isPaused || isGameOver || countdown !== null || isDashing) return;
 
       // Convertir coordenadas del mouse a coordenadas normalizadas (-1 a 1)
       const mouse = new Vector2((x / window.innerWidth) * 2 - 1, -(y / window.innerHeight) * 2 + 1);
@@ -56,7 +58,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
         ref.current.rotation.y = angle;
       }
     },
-    [ref, camera, raycaster, scene, isPaused, isGameOver, countdown]
+    [ref, camera, raycaster, scene, isPaused, isGameOver, countdown, isDashing]
   );
 
   // Manejar click derecho
@@ -76,7 +78,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     let animationFrameId: number;
 
     const updatePosition = () => {
-      if (!ref.current || isPaused || isGameOver || countdown !== null) {
+      if (!ref.current || isPaused || isGameOver || countdown !== null || isDashing) {
         if (animationFrameId) {
           cancelAnimationFrame(animationFrameId);
         }
@@ -103,7 +105,7 @@ export const usePlayerControls = (ref: React.RefObject<Mesh>) => {
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
-  }, [ref, isPaused, isGameOver, countdown]);
+  }, [ref, isPaused, isGameOver, countdown, isDashing]);
 
   // Configurar event listeners
   useEffect(() => {

@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { useGameStore } from "../stores/gameStore";
 import { usePlayerStore } from "../stores/playerStore";
 import { usePlayerControls } from "../hooks/usePlayerControls";
+import { DashParticles } from "./DashParticles";
 
 export const Player = () => {
   const meshRef = useRef<Mesh>(null);
@@ -14,6 +15,7 @@ export const Player = () => {
   const updatePosition = usePlayerStore(state => state.updatePosition);
   const playerPosition = usePlayerStore(state => state.state.position);
   const isShielded = usePlayerStore(state => state.state.isShielded);
+  const isDashing = usePlayerStore(state => state.state.isDashing);
 
   // Set initial position when component mounts and sync with store position changes
   useEffect(() => {
@@ -25,6 +27,13 @@ export const Player = () => {
   // Handle movement in animation frame
   useFrame((_, delta) => {
     if (!meshRef.current || isGameOver) return;
+
+    // Si está dashing, no permitir movimiento normal
+    if (isDashing) {
+      // Actualizar posición del mesh directamente
+      meshRef.current.position.copy(playerPosition);
+      return;
+    }
 
     if (controls.isMoving) {
       const currentPos = meshRef.current.position;
@@ -92,6 +101,8 @@ export const Player = () => {
           />
         </mesh>
       )}
+
+      <DashParticles isActive={isDashing} position={playerPosition} />
     </group>
   );
 };
