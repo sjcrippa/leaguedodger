@@ -3,8 +3,8 @@ import { GameConfig } from "../types/game";
 // Default game configuration
 export const DEFAULT_GAME_CONFIG: GameConfig = {
   mapSize: {
-    width: 60, // Width of the game map
-    height: 40, // Height of the game map
+    width: 80, // Width of the game map
+    height: 50, // Height of the game map
   },
   playerSpeed: 0.2,
   difficulty: "medium",

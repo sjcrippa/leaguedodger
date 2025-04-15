@@ -75,7 +75,7 @@ export const GameScene = () => {
         makeDefault
         position={[0, 50, 50]}
         rotation={[-Math.PI / 4, 0, 0]}
-        fov={45}
+        fov={50}
         zoom={1}
         near={0.1}
         far={1000}
