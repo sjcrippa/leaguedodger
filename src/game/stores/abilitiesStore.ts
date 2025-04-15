@@ -2,6 +2,7 @@ import { Vector3 } from "three";
 import { create } from "zustand";
 
 import { usePlayerStore } from "./playerStore";
+import { useGameStore } from "./gameStore";
 import { ABILITIES_CONFIG } from "../constants/abilities";
 import { Projectile, AbilityKey } from "../types/abilities";
 
@@ -35,6 +36,9 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   cooldowns: INITIAL_COOLDOWNS,
 
   addProjectile: (position, direction, source, speed = 0.8) => {
+    // No allow player projectiles during countdown
+    if (source === "player" && useGameStore.getState().countdown !== null) return;
+
     const id = Math.random().toString(36).substring(7);
     const projectile: Projectile = {
       id,
@@ -61,6 +65,9 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   },
 
   useAbility: (abilityKey, position, direction) => {
+    // Avoid using abilities during countdown
+    if (useGameStore.getState().countdown !== null) return false;
+
     const { cooldowns } = get();
     const ability = ABILITIES_CONFIG[abilityKey];
     if (!ability) return false;
@@ -137,6 +144,9 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   },
 
   castAbility: (abilityKey, player) => {
+    // Prevenir el casteo de habilidades durante el countdown
+    if (useGameStore.getState().countdown !== null) return;
+
     // Get player's forward direction based on rotation
     const direction = new Vector3(0, 0, 1).applyQuaternion(player.quaternion).normalize();
 
@@ -148,6 +158,9 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   },
 
   update: delta => {
+    // No actualizar durante el countdown
+    if (useGameStore.getState().countdown !== null) return;
+
     // Clean up expired cooldowns and update projectile positions
     const now = Date.now();
     set(state => ({
