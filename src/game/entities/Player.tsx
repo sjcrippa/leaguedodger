@@ -8,10 +8,12 @@ import { usePlayerControls } from "../hooks/usePlayerControls";
 
 export const Player = () => {
   const meshRef = useRef<Mesh>(null);
+  const shieldRef = useRef<Mesh>(null);
   const isGameOver = useGameStore(state => state.isGameOver);
   const controls = usePlayerControls(meshRef);
   const updatePosition = usePlayerStore(state => state.updatePosition);
   const playerPosition = usePlayerStore(state => state.state.position);
+  const isShielded = usePlayerStore(state => state.state.isShielded);
 
   // Set initial position when component mounts and sync with store position changes
   useEffect(() => {
@@ -21,7 +23,7 @@ export const Player = () => {
   }, [playerPosition]);
 
   // Handle movement in animation frame
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (!meshRef.current || isGameOver) return;
 
     if (controls.isMoving) {
@@ -39,27 +41,57 @@ export const Player = () => {
         controls.isMoving = false;
       }
     }
+
+    // Animar el escudo si está activo
+    if (shieldRef.current && isShielded) {
+      // Actualizar posición del escudo para que siga al jugador
+      shieldRef.current.position.copy(meshRef.current.position);
+      
+      // Rotación y escala del escudo
+      shieldRef.current.rotation.y += delta * 2; // Rotación constante
+      shieldRef.current.scale.set(
+        1 + Math.sin(Date.now() * 0.005) * 0.1, // Pulsación suave
+        1 + Math.sin(Date.now() * 0.005) * 0.1,
+        1 + Math.sin(Date.now() * 0.005) * 0.1
+      );
+    }
   });
 
   return (
-    <mesh ref={meshRef} castShadow name="player">
-      {/* Main body */}
-      <boxGeometry args={[1.5, 4, 1.5]} />
-      <meshStandardMaterial color="blue" />
+    <group>
+      <mesh ref={meshRef} castShadow name="player">
+        {/* Main body */}
+        <boxGeometry args={[1.5, 4, 1.5]} />
+        <meshStandardMaterial color="blue" />
 
-      {/* Eyes (optional decorative elements) */}
-      <group position={[0, 1.5, 0.9]}>
-        {/* Right eye */}
-        <mesh position={[0.2, 0, 0]}>
-          <boxGeometry args={[0.2, 0.2, 0.1]} />
-          <meshStandardMaterial color="white" />
+        {/* Eyes (optional decorative elements) */}
+        <group position={[0, 1.5, 0.9]}>
+          {/* Right eye */}
+          <mesh position={[0.2, 0, 0]}>
+            <boxGeometry args={[0.2, 0.2, 0.1]} />
+            <meshStandardMaterial color="white" />
+          </mesh>
+          {/* Left eye */}
+          <mesh position={[-0.2, 0, 0]}>
+            <boxGeometry args={[0.2, 0.2, 0.1]} />
+            <meshStandardMaterial color="white" />
+          </mesh>
+        </group>
+      </mesh>
+
+      {/* Shield effect */}
+      {isShielded && (
+        <mesh ref={shieldRef} castShadow>
+          <boxGeometry args={[3, 5, 3]} />
+          <meshStandardMaterial
+            color="#ffd700"
+            transparent
+            opacity={0.3}
+            emissive="#ffd700"
+            emissiveIntensity={0.5}
+          />
         </mesh>
-        {/* Left eye */}
-        <mesh position={[-0.2, 0, 0]}>
-          <boxGeometry args={[0.2, 0.2, 0.1]} />
-          <meshStandardMaterial color="white" />
-        </mesh>
-      </group>
-    </mesh>
+      )}
+    </group>
   );
 };

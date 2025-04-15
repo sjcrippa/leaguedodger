@@ -5,6 +5,7 @@ export type PlayerState = {
   isInvulnerable: boolean;
   isDashing: boolean;
   isFlashing: boolean;
+  isShielded: boolean;
   position: Vector3;
   velocity: Vector3;
 };

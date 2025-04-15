@@ -12,7 +12,7 @@ const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
   dashDuration: 0.3,
   flashDistance: 5,
   flashCooldown: 5,
-  shieldDuration: 2,
+  shieldDuration: 3, // 3 seconds shield duration
   shieldCooldown: 8,
   invulnerabilityDuration: 1, // 1 second of invulnerability after taking damage
   maxHealth: 100,
@@ -27,6 +27,7 @@ interface PlayerStore {
   setInvulnerable: (isInvulnerable: boolean) => void;
   setDashing: (isDashing: boolean) => void;
   setFlashing: (isFlashing: boolean) => void;
+  setShielded: (isShielded: boolean) => void;
   updatePosition: (position: Vector3) => void;
   updateVelocity: (velocity: Vector3) => void;
   reset: () => void;
@@ -38,6 +39,7 @@ export const usePlayerStore = create<PlayerStore>(set => ({
     isInvulnerable: false,
     isDashing: false,
     isFlashing: false,
+    isShielded: false,
     position: INITIAL_POSITION.clone(),
     velocity: new Vector3(),
   },
@@ -50,7 +52,7 @@ export const usePlayerStore = create<PlayerStore>(set => ({
 
   takeDamage: () =>
     set(state => {
-      if (state.state.isInvulnerable) return state;
+      if (state.state.isInvulnerable || state.state.isShielded) return state;
 
       // Reduce the health
       const newHealth = state.config.currentHealth - 100; // Fixed damage of 100 for now
@@ -127,6 +129,40 @@ export const usePlayerStore = create<PlayerStore>(set => ({
       },
     })),
 
+  setShielded: isShielded =>
+    set(state => {
+      const newState = {
+        state: {
+          ...state.state,
+          isShielded,
+        },
+        status: {
+          ...state.status,
+          isUsingAbility: isShielded,
+          currentAbility: isShielded ? "w" : null,
+        },
+      };
+
+      // Si se activa el escudo, programar su desactivación
+      if (isShielded) {
+        setTimeout(() => {
+          set(state => ({
+            state: {
+              ...state.state,
+              isShielded: false,
+            },
+            status: {
+              ...state.status,
+              isUsingAbility: false,
+              currentAbility: null,
+            },
+          }));
+        }, DEFAULT_PLAYER_CONFIG.shieldDuration * 1000);
+      }
+
+      return newState;
+    }),
+
   updatePosition: position =>
     set(state => ({
       state: {
@@ -150,6 +186,7 @@ export const usePlayerStore = create<PlayerStore>(set => ({
         isInvulnerable: false,
         isDashing: false,
         isFlashing: false,
+        isShielded: false,
         position: INITIAL_POSITION.clone(),
         velocity: new Vector3(),
       },

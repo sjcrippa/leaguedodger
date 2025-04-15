@@ -3,6 +3,7 @@ import { create } from "zustand";
 
 import { ABILITIES_CONFIG } from "../constants/abilities";
 import { Projectile, AbilityKey } from "../types/abilities";
+import { usePlayerStore } from "./playerStore";
 
 interface AbilitiesState {
   projectiles: Projectile[];
@@ -89,9 +90,16 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
       },
     }));
 
-    // Create projectile for Q ability
-    if (abilityKey === "q") {
-      get().addProjectile(position, direction, "player");
+    // Handle different abilities
+    switch (abilityKey) {
+      case "q":
+        get().addProjectile(position, direction, "player");
+        break;
+      case "w":
+        usePlayerStore.getState().setShielded(true);
+        break;
+      default:
+        break;
     }
 
     return true;
