@@ -18,42 +18,46 @@ export const useAnimationManager = create<AnimationManager>((set, get) => ({
   isRunning: false,
 
   registerCallback: (id: string, callback: AnimationCallback) => {
-    set(state => {
-      const newCallbacks = new Map(state.callbacks);
-      newCallbacks.set(id, callback);
-      return { callbacks: newCallbacks };
-    });
+    const state = get();
+    const newCallbacks = new Map(state.callbacks);
+    newCallbacks.set(id, callback);
+
+    set({ callbacks: newCallbacks });
 
     // Start animation loop if it's not running
-    if (!get().isRunning) {
+    if (!state.isRunning) {
       get().startAnimation();
     }
   },
 
   unregisterCallback: (id: string) => {
-    set(state => {
-      const newCallbacks = new Map(state.callbacks);
-      newCallbacks.delete(id);
-      return { callbacks: newCallbacks };
-    });
+    const state = get();
+    const newCallbacks = new Map(state.callbacks);
+    newCallbacks.delete(id);
+
+    set({ callbacks: newCallbacks });
 
     // Stop animation loop if no callbacks remain
-    if (get().callbacks.size === 0) {
-      get().stopAnimation();
+    if (newCallbacks.size === 0) {
+      set({ isRunning: false });
     }
   },
 
   startAnimation: () => {
+    const state = get();
+    if (state.isRunning) return;
+
     set({ isRunning: true, lastTime: performance.now() });
 
     const animate = (currentTime: number) => {
-      if (!get().isRunning) return;
+      const currentState = get();
+      if (!currentState.isRunning) return;
 
-      const delta = (currentTime - get().lastTime) / 1000; // Convert to seconds
+      const delta = (currentTime - currentState.lastTime) / 1000; // Convert to seconds
       set({ lastTime: currentTime });
 
       // Execute all registered callbacks
-      get().callbacks.forEach(callback => {
+      currentState.callbacks.forEach(callback => {
         try {
           callback(delta);
         } catch (error) {

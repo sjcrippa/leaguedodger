@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useGameStore } from "../stores/gameStore";
 import { useLevelStore } from "../stores/levelStore";
 import { useAbilityBarStore } from "../stores/abilityBarStore";
-import { useAnimationManager } from "../core/AnimationManager";
 
 const AbilityBar = () => {
   const abilities = useAbilityBarStore(state => state.abilities);
@@ -14,7 +13,6 @@ const AbilityBar = () => {
   const isGameOver = useGameStore(state => state.isGameOver);
   const countdown = useGameStore(state => state.countdown);
   const currentLevel = useLevelStore(state => state.currentLevel);
-  const animationManager = useAnimationManager();
 
   // Effect to reset cooldowns when level changes or countdown ends
   useEffect(() => {
@@ -27,16 +25,16 @@ const AbilityBar = () => {
     }
   }, [countdown, resetAbilities]);
 
+  // Update cooldowns every frame
   useEffect(() => {
-    const id = "ability-bar-cooldowns";
-    animationManager.registerCallback(id, delta => {
-      updateCooldowns(delta);
-    });
+    if (isPaused || isGameOver || countdown !== null) return;
 
-    return () => {
-      animationManager.unregisterCallback(id);
-    };
-  }, [animationManager, updateCooldowns]);
+    const interval = setInterval(() => {
+      updateCooldowns(1/60); // Assuming 60 FPS
+    }, 1000/60); // 60 FPS
+
+    return () => clearInterval(interval);
+  }, [isPaused, isGameOver, countdown, updateCooldowns]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {

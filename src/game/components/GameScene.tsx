@@ -7,9 +7,10 @@ import { Player } from "../entities/Player";
 import { useGameStore } from "../stores/gameStore";
 import { Projectile } from "../entities/Projectile";
 import { useEnemyStore } from "../stores/enemyStore";
+import { useLevelStore } from "../stores/levelStore";
+import { usePlayerStore } from "../stores/playerStore";
 import { CollisionManager } from "../core/CollisionManager";
 import { AbilitiesManager } from "../core/AbilitiesManager";
-import { usePlayerStore } from "../stores/playerStore";
 import { useAbilitiesStore } from "../stores/abilitiesStore";
 import { DEFAULT_GAME_CONFIG } from "../constants/gameConfig";
 
@@ -23,6 +24,7 @@ export const GameScene = () => {
   const countdown = useGameStore(state => state.countdown);
   const startCountdown = useGameStore(state => state.startCountdown);
   const updateCountdown = useGameStore(state => state.updateCountdown);
+  const currentLevel = useLevelStore(state => state.currentLevel);
 
   const enemies = useEnemyStore(state => state.enemies);
   const reset = useEnemyStore(state => state.reset);
@@ -34,6 +36,13 @@ export const GameScene = () => {
     startCountdown();
     resetPlayer(); // Reset player position when countdown starts
   }, [startCountdown, isGameOver, resetPlayer]);
+
+  // Start countdown when level changes
+  useEffect(() => {
+    if (isGameOver) return;
+    startCountdown();
+    resetPlayer();
+  }, [currentLevel, startCountdown, isGameOver, resetPlayer]);
 
   // Update countdown every second
   useEffect(() => {
