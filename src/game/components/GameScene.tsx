@@ -13,6 +13,7 @@ import { CollisionManager } from "../core/CollisionManager";
 import { AbilitiesManager } from "../core/AbilitiesManager";
 import { useAbilitiesStore } from "../stores/abilitiesStore";
 import { DEFAULT_GAME_CONFIG } from "../constants/gameConfig";
+import { useEnemyInteraction } from "../hooks/useEnemyInteraction";
 
 export const GameScene = () => {
   const projectiles = useAbilitiesStore(state => state.projectiles);
@@ -29,6 +30,9 @@ export const GameScene = () => {
   const enemies = useEnemyStore(state => state.enemies);
   const reset = useEnemyStore(state => state.reset);
   const updateEnemies = useEnemyStore(state => state.updateEnemies);
+
+  // Get enemy interaction state
+  const { hoveredEnemyId } = useEnemyInteraction();
 
   // Initialize countdown when game starts
   useEffect(() => {
@@ -103,7 +107,11 @@ export const GameScene = () => {
 
       {/* Enemies */}
       {enemies.map(enemy => (
-        <Enemy key={enemy.id} enemy={enemy} />
+        <Enemy 
+          key={enemy.id} 
+          enemy={enemy} 
+          isHovered={hoveredEnemyId === enemy.id}
+        />
       ))}
 
       {/* Projectiles */}
