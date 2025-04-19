@@ -88,10 +88,16 @@ export const GameScene = () => {
       {/* Lighting */}
       <ambientLight intensity={0.5} />
       <directionalLight
-        position={[10, 10, 5]}
+        position={[50, 70, 50]}
         intensity={1}
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[4096, 4096]}
+        shadow-camera-near={0.1}
+        shadow-camera-far={800}
+        shadow-camera-left={-50}
+        shadow-camera-right={50}
+        shadow-camera-top={30}
+        shadow-camera-bottom={-30}
       />
 
       {/* Game floor */}
