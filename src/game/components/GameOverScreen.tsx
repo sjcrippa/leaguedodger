@@ -1,4 +1,4 @@
-import { Gamepad2, GraduationCap, X, MousePointer } from "lucide-react";
+import { Gamepad2, GraduationCap, X, Crosshair } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -105,7 +105,7 @@ export const GameOverScreen = () => {
                 <h2 className="text-2xl font-bold text-white mb-4">Apuntar</h2>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center">
-                    <MousePointer className="w-6 h-6 text-white" />
+                    <Crosshair className="w-6 h-6 text-white" />
                   </div>
                   <p className="text-white text-lg">
                     Mueve el mouse para apuntar a los enemigos. El cursor se volverá amarillo cuando estés apuntando a un enemigo.
@@ -118,7 +118,7 @@ export const GameOverScreen = () => {
                 <h2 className="text-2xl font-bold text-white mb-4">Ataque Básico</h2>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center">
-                    <MousePointer className="w-6 h-6 text-white" />
+                    <Crosshair className="w-6 h-6 text-white" />
                   </div>
                   <p className="text-white text-lg">
                     Haz clic izquierdo para realizar un ataque básico a los enemigos cuando estén en tu mira.

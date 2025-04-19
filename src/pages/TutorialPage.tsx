@@ -1,4 +1,4 @@
-import { MousePointer, MousePointerClick, X } from "lucide-react";
+import { Crosshair, Keyboard, MousePointer } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const TutorialPage = () => {
@@ -34,7 +34,7 @@ export const TutorialPage = () => {
                   <span className="text-white text-xl font-bold">R</span>
                 </div>
               </div>
-              <p className="text-white text-lg">
+              <p className="text-white text-lg ml-2">
                 Usa las teclas Q, W, E y R para moverte por el mapa y esquivar a los enemigos.
               </p>
             </div>
@@ -44,8 +44,8 @@ export const TutorialPage = () => {
           <section className="bg-slate-700 p-6 rounded-xl">
             <h2 className="text-2xl font-bold text-white mb-4">Apuntar</h2>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center">
-                <MousePointerClick className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-slate-600 rounded-lg px-3 flex items-center justify-center">
+                <Crosshair className="w-6 h-6 text-white" />
               </div>
               <p className="text-white text-lg">
                 Mueve el mouse para apuntar a los enemigos. El cursor se volverá amarillo cuando estés apuntando a un enemigo.
@@ -61,7 +61,7 @@ export const TutorialPage = () => {
                 <MousePointer className="w-6 h-6 text-white" />
               </div>
               <p className="text-white text-lg">
-                Haz clic izquierdo para realizar un ataque básico a los enemigos cuando estén en tu mira.
+                Haz clic derecho para realizar un ataque básico a los enemigos cuando estén en tu mira.
               </p>
             </div>
           </section>
@@ -71,7 +71,7 @@ export const TutorialPage = () => {
             <h2 className="text-2xl font-bold text-white mb-4">Pausa</h2>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center">
-                <X className="w-6 h-6 text-white" />
+                <Keyboard className="w-6 h-6 text-white" />
               </div>
               <p className="text-white text-lg">
                 Presiona ESC para pausar el juego en cualquier momento.
