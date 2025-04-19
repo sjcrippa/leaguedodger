@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { HomePage } from "@/pages/HomePage";
 import { GamePage } from "@/pages/GamePage";
+import { TutorialPage } from "@/pages/TutorialPage";
 import { MainLayout } from "@/pages/layouts/MainLayout";
 import { GameLayout } from "@/pages/layouts/GameLayout";
 
@@ -37,7 +38,7 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="404" element={<NotFound />} />
           <Route path="settings" element={<UnderConstruction />} />
-          <Route path="tutorial" element={<UnderConstruction />} />
+          <Route path="tutorial" element={<TutorialPage />} />
         </Route>
 
         {/* Ruta del juego con GameLayout */}
