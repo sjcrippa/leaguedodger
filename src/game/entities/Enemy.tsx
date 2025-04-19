@@ -35,9 +35,9 @@ export const Enemy = ({ enemy, isHovered }: EnemyProps) => {
           <meshStandardMaterial
             color="#ffff00"
             transparent
-            opacity={0.5}
+            opacity={0.3}
             emissive="#ffff00"
-            emissiveIntensity={1}
+            emissiveIntensity={0.5}
           />
         </mesh>
       )}

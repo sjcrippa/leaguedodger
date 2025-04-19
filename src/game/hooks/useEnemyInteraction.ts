@@ -1,9 +1,11 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import { Vector3, Vector2 } from "three";
 import { useGameStore } from "../stores/gameStore";
 import { usePlayerStore } from "../stores/playerStore";
 import { useAbilitiesStore } from "../stores/abilitiesStore";
+
+const BASIC_ATTACK_COOLDOWN = 3000; // 3 seconds in milliseconds
 
 export const useEnemyInteraction = () => {
   const { camera, raycaster, scene } = useThree();
@@ -12,6 +14,7 @@ export const useEnemyInteraction = () => {
   const countdown = useGameStore(state => state.countdown);
   const playerPosition = usePlayerStore(state => state.state.position);
   const [hoveredEnemyId, setHoveredEnemyId] = useState<string | null>(null);
+  const lastAttackTimes = useRef<Record<string, number>>({});
 
   // Detect hover over enemies
   const handleMouseMove = useCallback(
@@ -52,6 +55,14 @@ export const useEnemyInteraction = () => {
         event.preventDefault();
 
         if (hoveredEnemyId) {
+          const now = Date.now();
+          const lastAttackTime = lastAttackTimes.current[hoveredEnemyId] || 0;
+          
+          if (now - lastAttackTime < BASIC_ATTACK_COOLDOWN) {
+            // Show cooldown feedback (you could add a visual or sound effect here)
+            return;
+          }
+
           const enemyGroup = scene.getObjectByName(`enemy-${hoveredEnemyId}`);
           if (enemyGroup) {
             const direction = new Vector3()
@@ -59,6 +70,7 @@ export const useEnemyInteraction = () => {
               .normalize();
             const startPosition = playerPosition.clone().add(direction.multiplyScalar(1.5));
             useAbilitiesStore.getState().addProjectile(startPosition, direction, "player", 0.6);
+            lastAttackTimes.current[hoveredEnemyId] = now;
           }
         }
       }
