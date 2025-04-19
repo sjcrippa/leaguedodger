@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Crosshair, Keyboard, MousePointer, X } from "lucide-react";
+import { Crosshair, Keyboard, MousePointer, X, LucideMouse } from "lucide-react";
 
 import { useGameStore } from "@/game/stores/gameStore";
 import { useTutorialStore } from "@/game/stores/tutorialStore";
@@ -36,23 +36,78 @@ export const TutorialPage = () => {
           <section className="bg-slate-700 p-6 rounded-xl">
             <h2 className="text-2xl font-bold text-white mb-4">Movimiento</h2>
             <div className="flex items-center gap-4">
-              <div className="grid grid-cols-4 gap-4">
-                <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center">
+                <LucideMouse className="w-6 h-6 text-white" />
+              </div>
+              <p className="text-white text-lg">
+                Haz clic derecho para realizar un ataque básico a los enemigos cuando estén en tu
+                mira.
+              </p>
+            </div>
+          </section>
+
+          {/* Habilidades */}
+          <section className="bg-slate-700 p-6 rounded-xl">
+            <h2 className="text-2xl font-bold text-white mb-4">Habilidades</h2>
+            
+            {/* Habilidad Q */}
+            <div className="mb-6 p-4 bg-slate-600 rounded-lg">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-slate-500 rounded-lg flex items-center justify-center">
                   <span className="text-white text-xl font-bold">Q</span>
                 </div>
-                <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-xl font-bold">W</span>
-                </div>
-                <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-xl font-bold">E</span>
-                </div>
-                <div className="w-12 h-12 bg-slate-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-xl font-bold">R</span>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Projectile</h3>
+                  <p className="text-white text-lg">
+                    Dispara proyectiles en la dirección en la que mira tu jugador. Ideal para atacar a distancia y mantener a los enemigos a raya.
+                  </p>
                 </div>
               </div>
-              <p className="text-white text-lg ml-2">
-                Usa las teclas Q, W, E y R para moverte por el mapa y esquivar a los enemigos.
-              </p>
+            </div>
+
+            {/* Habilidad W */}
+            <div className="mb-6 p-4 bg-slate-600 rounded-lg">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-slate-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-xl font-bold">W</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Shield</h3>
+                  <p className="text-white text-lg">
+                    Activa un escudo que te protege temporalmente de los ataques enemigos. Úsalo estratégicamente cuando estés en peligro.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Habilidad E */}
+            <div className="mb-6 p-4 bg-slate-600 rounded-lg">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-slate-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-xl font-bold">E</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Dash</h3>
+                  <p className="text-white text-lg">
+                    Te desplazas rápidamente en la dirección del cursor. Perfecto para esquivar ataques o reposicionarte en el campo de batalla.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Habilidad R */}
+            <div className="p-4 bg-slate-600 rounded-lg">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-slate-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white text-xl font-bold">R</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Flash</h3>
+                  <p className="text-white text-lg">
+                    Te teletransportas hacia adelante, permitiéndote escapar de situaciones peligrosas o sorprender a tus enemigos.
+                  </p>
+                </div>
+              </div>
             </div>
           </section>
 

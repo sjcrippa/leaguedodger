@@ -13,14 +13,14 @@ export const GameHUD = () => {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && countdown === null) {
         setPaused(!isPaused);
       }
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [isPaused, setPaused]);
+  }, [isPaused, setPaused, countdown]);
 
   return (
     <>
@@ -44,7 +44,7 @@ export const GameHUD = () => {
           {/* Controls */}
           <div className="flex gap-4">
             <button
-              onClick={() => setPaused(!isPaused)}
+              onClick={() => countdown === null && setPaused(!isPaused)}
               className="bg-black/50 backdrop-blur-sm rounded-lg px-6 py-3 text-white hover:bg-black/60 transition-colors"
             >
               {isPaused ? <PlayIcon className="w-12 h-12" /> : <PauseIcon className="w-12 h-12" />}
