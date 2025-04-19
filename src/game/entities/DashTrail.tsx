@@ -1,5 +1,4 @@
 import { Line } from "@react-three/drei";
-import { useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Vector3 } from "three";
 
