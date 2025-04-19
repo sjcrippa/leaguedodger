@@ -77,9 +77,9 @@ export const GameScene = () => {
       {/* Camera setup */}
       <PerspectiveCamera
         makeDefault
-        position={[0, 50, 50]}
+        position={[0, 60, 60]}
         rotation={[-Math.PI / 4, 0, 0]}
-        fov={50}
+        fov={55}
         zoom={1}
         near={0.1}
         far={1000}
