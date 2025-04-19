@@ -1,18 +1,34 @@
-import { Crosshair, Keyboard, MousePointer } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Crosshair, Keyboard, MousePointer, X } from "lucide-react";
+
+import { useGameStore } from "@/game/stores/gameStore";
+import { useTutorialStore } from "@/game/stores/tutorialStore";
 
 export const TutorialPage = () => {
+  const setShowTutorial = useTutorialStore(state => state.setShowTutorial);
+  const isGameOver = useGameStore(state => state.isGameOver);
+  const isGameOverActive = isGameOver;
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8 -mt-20">
       <div className="bg-slate-800 rounded-2xl p-8">
         <div className="flex justify-between items-center mb-8 align-middle">
           <h1 className="text-4xl font-bold text-white ">Tutorial</h1>
-          <Link
-            to="/"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl text-center text-lg transition-colors"
-          >
-            Volver al menú
-          </Link>
+          {isGameOverActive ? (
+            <button
+              onClick={() => setShowTutorial(false)}
+              className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+          ) : (
+            <Link
+              to="/"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl text-center text-lg transition-colors"
+            >
+              Volver al menú
+            </Link>
+          )}
         </div>
 
         <div className="space-y-8">
@@ -48,7 +64,8 @@ export const TutorialPage = () => {
                 <Crosshair className="w-6 h-6 text-white" />
               </div>
               <p className="text-white text-lg">
-                Mueve el mouse para apuntar a los enemigos. El cursor se volverá amarillo cuando estés apuntando a un enemigo.
+                Mueve el mouse para apuntar a los enemigos. El cursor se volverá amarillo cuando
+                estés apuntando a un enemigo.
               </p>
             </div>
           </section>
@@ -61,7 +78,8 @@ export const TutorialPage = () => {
                 <MousePointer className="w-6 h-6 text-white" />
               </div>
               <p className="text-white text-lg">
-                Haz clic derecho para realizar un ataque básico a los enemigos cuando estén en tu mira.
+                Haz clic derecho para realizar un ataque básico a los enemigos cuando estén en tu
+                mira.
               </p>
             </div>
           </section>
@@ -83,12 +101,13 @@ export const TutorialPage = () => {
           <section className="bg-slate-700 p-6 rounded-xl">
             <h2 className="text-2xl font-bold text-white mb-4">Objetivo</h2>
             <p className="text-white text-lg">
-              Tu objetivo es sobrevivir el mayor tiempo posible mientras derrotas a los enemigos. Cada enemigo derrotado te da puntos.
-              El juego se vuelve más difícil a medida que avanzas de nivel.
+              Tu objetivo es sobrevivir el mayor tiempo posible mientras derrotas a los enemigos.
+              Cada enemigo derrotado te da puntos. El juego se vuelve más difícil a medida que
+              avanzas de nivel.
             </p>
           </section>
         </div>
       </div>
     </div>
   );
-}; 
+};

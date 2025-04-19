@@ -44,7 +44,7 @@ const DEFAULT_ENEMY_CONFIG = {
   attackRange: 20,
   attackCooldown: 2,
   projectileSpeed: 0.9,
-  moveSpeed: 0.15,
+  moveSpeed: 0.1,
   minEnemyDistance: 8,
   enemyHealth: 100,
   enemyDamage: 10,

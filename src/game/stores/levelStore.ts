@@ -23,11 +23,11 @@ const calculateLevelProperties = (level: number) => {
 
   return {
     enemiesPerLevel: baseEnemies + enemiesIncrement * (level - 1), // 5, 7, 9, 11, etc.
-    enemySpeed: 0.15 * levelMultiplier,
+    enemySpeed: 0.1 * levelMultiplier,
     enemyHealth: 100 * levelMultiplier,
     enemyDamage: 10 * levelMultiplier,
     spawnInterval: Math.max(800, 2000 / levelMultiplier), // minimum 800ms
-    projectileSpeed: 1.2 * levelMultiplier, // Added projectile speed scaling
+    projectileSpeed: 1.2 * levelMultiplier,
   };
 };
 
