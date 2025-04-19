@@ -19,14 +19,15 @@ interface LevelState {
 const calculateLevelProperties = (level: number) => {
   const baseEnemies = 5;
   const enemiesIncrement = 2;
-  const levelMultiplier = Math.pow(1.2, level - 1); // 20% more per level
+  const levelMultiplier = Math.pow(1.3, level - 1); // 30% more per level
 
   return {
     enemiesPerLevel: baseEnemies + enemiesIncrement * (level - 1), // 5, 7, 9, 11, etc.
-    enemySpeed: 0.08 * levelMultiplier,
+    enemySpeed: 0.15 * levelMultiplier,
     enemyHealth: 100 * levelMultiplier,
     enemyDamage: 10 * levelMultiplier,
     spawnInterval: Math.max(800, 2000 / levelMultiplier), // minimum 800ms
+    projectileSpeed: 1.2 * levelMultiplier, // Added projectile speed scaling
   };
 };
 
