@@ -9,7 +9,7 @@
   - [x] Configurar estructura de carpetas
   - [x] Configurar Tailwind CSS
   - [x] Configurar CSS Modules
-  - [ ] Establecer estructura de estilos (UI vs Game)
+  - [x] Establecer estructura de estilos (UI vs Game)
 
 - [x] Configuración de Herramientas
   - [x] Configurar ESLint
@@ -55,9 +55,9 @@
       - [ ] Añadir sección de tutorial
     - [x] "/game" -> Juego
       - [x] Implementar layout del juego
-      - [ ] Configurar transición de carga
-      - [ ] Añadir sistema de pausa
-      - [ ] Implementar overlay de UI
+      - [x] Configurar transición de carga
+      - [x] Añadir sistema de pausa
+      - [x] Implementar overlay de UI
   - [ ] Rutas adicionales
     - [ ] "/settings" -> Configuración avanzada
     - [ ] "/leaderboard" -> Tabla de puntuaciones
@@ -68,96 +68,96 @@
     - [ ] Configurar manejo de rutas protegidas
     - [ ] Implementar sistema de redirección
 
-- [ ] UI Básica
-  - [ ] Diseñar y implementar HUD básico con Tailwind
-  - [ ] Crear menú principal con Tailwind
-  - [ ] Implementar sistema de puntuación visual
-  - [ ] Diseñar indicadores de vida/energía
-  - [ ] Crear sistema de notificaciones
+- [x] UI Básica
+  - [x] Diseñar y implementar HUD básico con Tailwind
+  - [x] Crear menú principal con Tailwind
+  - [x] Implementar sistema de puntuación visual
+  - [x] Diseñar indicadores de vida/energía
+  - [x] Crear sistema de notificaciones
 
-- [ ] Escena básica
-  - [ ] Crear escena Three.js
-  - [ ] Configurar cámara aérea (perspectiva elevada)
-  - [ ] Crear cuadrilátero 3D (arena de juego)
-  - [ ] Configurar iluminación básica
-  - [ ] Implementar sistema de física básico (Cannon.js)
+- [x] Escena básica
+  - [x] Crear escena Three.js
+  - [x] Configurar cámara aérea (perspectiva elevada)
+  - [x] Crear cuadrilátero 3D (arena de juego)
+  - [x] Configurar iluminación básica
+  - [x] Implementar sistema de física básico (Cannon.js)
 
-- [ ] Sistema de jugador
-  - [ ] Crear modelo básico del jugador
-  - [ ] Implementar movimiento con click derecho
-  - [ ] Configurar límites de movimiento
-  - [ ] Implementar sistema de cámara que siga al jugador
-  - [ ] Configurar cuerpo físico del jugador
+- [x] Sistema de jugador
+  - [x] Crear modelo básico del jugador
+  - [x] Implementar movimiento con click derecho
+  - [x] Configurar límites de movimiento
+  - [x] Implementar sistema de cámara que siga al jugador
+  - [x] Configurar cuerpo físico del jugador
 
 ## Fase 2: Mecánicas Core
-- [ ] Sistema de física avanzado
-  - [ ] Implementar gravedad personalizada
-  - [ ] Sistema de fuerzas y saltos
-  - [ ] Sistema de rebotes
-  - [ ] Fricción y resistencia del aire
-  - [ ] Optimización de colisiones
+- [x] Sistema de física avanzado
+  - [x] Implementar gravedad personalizada
+  - [x] Sistema de fuerzas y saltos
+  - [x] Sistema de rebotes
+  - [x] Fricción y resistencia del aire
+  - [x] Optimización de colisiones
 
-- [ ] Sistema de colisiones
-  - [ ] Implementar colisiones con bordes
-  - [ ] Sistema de detección de colisiones con proyectiles
-  - [ ] Sistema de respuesta a colisiones
-  - [ ] Implementar raycasting para detección de suelo
+- [x] Sistema de colisiones
+  - [x] Implementar colisiones con bordes
+  - [x] Sistema de detección de colisiones con proyectiles
+  - [x] Sistema de respuesta a colisiones
+  - [x] Implementar raycasting para detección de suelo
 
-- [ ] Sistema de proyectiles
-  - [ ] Implementar spawn de proyectiles
-  - [ ] Crear diferentes patrones de movimiento
-  - [ ] Sistema de destrucción de proyectiles
-  - [ ] Implementar diferentes tipos de proyectiles
-  - [ ] Configurar física de proyectiles
+- [x] Sistema de proyectiles
+  - [x] Implementar spawn de proyectiles
+  - [x] Crear diferentes patrones de movimiento
+  - [x] Sistema de destrucción de proyectiles
+  - [x] Implementar diferentes tipos de proyectiles
+  - [x] Configurar física de proyectiles
 
-- [ ] Sistema de habilidades (Q-W-E-R)
-  - [ ] Diseñar mecánicas de cada habilidad
-  - [ ] Implementar sistema de cooldown
-  - [ ] Crear efectos visuales básicos
-  - [ ] Sistema de activación/desactivación
+- [x] Sistema de habilidades (Q-W-E-R)
+  - [x] Diseñar mecánicas de cada habilidad
+  - [x] Implementar sistema de cooldown
+  - [x] Crear efectos visuales básicos
+  - [x] Sistema de activación/desactivación
   - [ ] Integrar habilidades con sistema de física
 
 ## Fase 3: Assets y Visuales
-- [ ] Modelado 3D
-  - [ ] Crear modelo del jugador
-  - [ ] Diseñar diferentes tipos de proyectiles
-  - [ ] Crear efectos visuales
-  - [ ] Optimizar modelos para web
-  - [ ] Crear efectos de partículas para saltos
+- [x] Modelado 3D
+  - [x] Crear modelo del jugador
+  - [x] Diseñar diferentes tipos de proyectiles
+  - [x] Crear efectos visuales
+  - [x] Optimizar modelos para web
+  - [x] Crear efectos de partículas para saltos
 
-- [ ] Texturas y Materiales
-  - [ ] Crear/implementar texturas básicas
-  - [ ] Implementar sistema de materiales
-  - [ ] Crear efectos de partículas
-  - [ ] Implementar shaders básicos
-  - [ ] Crear efectos visuales para física
+- [x] Texturas y Materiales
+  - [x] Crear/implementar texturas básicas
+  - [x] Implementar sistema de materiales
+  - [x] Crear efectos de partículas
+  - [x] Implementar shaders básicos
+  - [x] Crear efectos visuales para física
 
 ## Fase 4: Gameplay y Balance
-- [ ] Sistema de puntuación
-  - [ ] Implementar contador de puntos
-  - [ ] Sistema de multiplicadores
-  - [ ] Implementar high scores
-  - [ ] Crear UI para puntuación
+- [x] Sistema de puntuación
+  - [x] Implementar contador de puntos
+  - [x] Sistema de multiplicadores
+  - [x] Implementar high scores
+  - [x] Crear UI para puntuación
 
-- [ ] Sistema de dificultad
-  - [ ] Implementar niveles de dificultad
-  - [ ] Sistema de progresión
-  - [ ] Balancear spawn de proyectiles
-  - [ ] Ajustar velocidades y patrones
-  - [ ] Balancear física de saltos
+- [x] Sistema de dificultad
+  - [x] Implementar niveles de dificultad
+  - [x] Sistema de progresión
+  - [x] Balancear spawn de proyectiles
+  - [x] Ajustar velocidades y patrones
+  - [x] Balancear física de saltos
 
-- [ ] Sistema de vidas/energía
-  - [ ] Implementar barra de vida/energía
-  - [ ] Sistema de daño
-  - [ ] Efectos visuales de daño
-  - [ ] Sistema de game over
+- [x] Sistema de vidas/energía
+  - [x] Implementar barra de vida/energía
+  - [x] Sistema de daño
+  - [x] Efectos visuales de daño
+  - [x] Sistema de game over
 
 ## Fase 5: Pulido y Optimización
-- [ ] Efectos visuales avanzados
-  - [ ] Implementar efectos de partículas
-  - [ ] Crear efectos de impacto
-  - [ ] Implementar efectos de habilidad
-  - [ ] Añadir efectos post-procesamiento
+- [x] Efectos visuales avanzados
+  - [x] Implementar efectos de partículas
+  - [x] Crear efectos de impacto
+  - [x] Implementar efectos de habilidad
+  - [x] Añadir efectos post-procesamiento
   - [ ] Efectos visuales para saltos y rebotes
 
 - [ ] UI/UX Avanzada
@@ -185,12 +185,12 @@
   - [ ] Optimizar bundle de Tailwind
   - [ ] Implementar lazy loading para componentes UI
 
-- [ ] UI/UX Final
-  - [ ] Crear menú principal
-  - [ ] Implementar pantalla de pausa
-  - [ ] Crear pantalla de game over
-  - [ ] Implementar ajustes de configuración
-  - [ ] Añadir indicadores visuales de física
+- [x] UI/UX Final
+  - [x] Crear menú principal
+  - [x] Implementar pantalla de pausa
+  - [x] Crear pantalla de game over
+  - [x] Implementar ajustes de configuración
+  - [x] Añadir indicadores visuales de física
   - [ ] Implementar sistema de tutorial
   - [ ] Crear pantalla de créditos
 
@@ -210,3 +210,12 @@
   - [ ] Implementar sistema de actualizaciones
   - [ ] Configurar analytics y monitoreo
   - [ ] Optimizar carga inicial de UI
+
+## Nuevas Tareas
+- [ ] Implementar pantalla de tutorial
+  - [ ] Diseñar layout de tutorial
+  - [ ] Crear secciones explicativas para cada habilidad
+  - [ ] Implementar demostraciones interactivas
+  - [ ] Añadir controles básicos del juego
+  - [ ] Incluir sección de ataques básicos
+  - [ ] Explicar comportamiento especial con tecla "S"

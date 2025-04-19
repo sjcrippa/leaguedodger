@@ -104,25 +104,25 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
         const playerStore = usePlayerStore.getState();
         const playerPosition = playerStore.state.position;
 
-        // Usar la dirección proporcionada por castAbility
+        // Use provided direction by castAbility
         const targetPosition = playerPosition.clone().add(direction.multiplyScalar(10));
 
-        // Aplicar dash con animación
+        // Apply dash with animation
         playerStore.setDashing(true);
 
-        // Animación de movimiento rápido
+        // Animation of fast movement
         const startTime = Date.now();
-        const duration = 300; // 300ms para el dash
+        const duration = 300; // 300ms for the dash
         const startPosition = playerPosition.clone();
 
         const animateDash = () => {
           const elapsed = Date.now() - startTime;
           const progress = Math.min(elapsed / duration, 1);
 
-          // Interpolación suave usando easeOutQuad
+          // Smooth interpolation using easeOutQuad
           const easeProgress = 1 - Math.pow(1 - progress, 2);
 
-          // Calcular posición intermedia
+          // Calculate intermediate position
           const currentPosition = startPosition.clone().lerp(targetPosition, easeProgress);
           playerStore.updatePosition(currentPosition);
           if (player) {
@@ -143,27 +143,27 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
         const playerStore = usePlayerStore.getState();
         const playerPosition = playerStore.state.position;
 
-        // Usar la dirección proporcionada por castAbility
+        // Use provided direction by castAbility
         const targetPosition = playerPosition.clone().add(direction.multiplyScalar(12));
 
-        // Primero activamos el estado de flash
+        // First activate the flash state
         playerStore.setFlashing(true);
 
-        // Pequeño delay para asegurar que las partículas se muestren
+        // Small delay to ensure particles are shown
         setTimeout(() => {
-          // Luego actualizamos la posición
+          // Then update the position
           playerStore.updatePosition(targetPosition);
           
-          // Forzar una actualización inmediata del mesh
+          // Force an immediate mesh update
           if (player) {
             player.position.copy(targetPosition);
           }
 
-          // Finalmente desactivamos el estado después de la animación
+          // Finally deactivate the state after the animation
           setTimeout(() => {
             playerStore.setFlashing(false);
-          }, 500);
-        }, 50); // Pequeño delay para asegurar que las partículas se muestren
+          }, 100);
+        }, 50);
 
         break;
       }
@@ -175,7 +175,7 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   },
 
   castAbility: (abilityKey, player) => {
-    // Prevenir el casteo de habilidades durante el countdown
+    // Prevent casting abilities during countdown
     if (useGameStore.getState().countdown !== null) return;
 
     // Get player's forward direction based on rotation
@@ -189,7 +189,7 @@ export const useAbilitiesStore = create<AbilitiesState>((set, get) => ({
   },
 
   update: delta => {
-    // No actualizar durante el countdown
+    // No update during countdown
     if (useGameStore.getState().countdown !== null) return;
 
     // Clean up expired cooldowns and update projectile positions
